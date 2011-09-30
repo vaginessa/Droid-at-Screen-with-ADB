@@ -88,7 +88,7 @@ public class FrameRateCommand extends Command {
     }
 
     protected int getPreferenceValue() {
-        return getApplication().getPreferences().getInt(getPreferencesKey(), 1);
+        return getApplication().getPreferences().getInt(getPreferencesKey(), 60);
     }
 
     public int getRate() {

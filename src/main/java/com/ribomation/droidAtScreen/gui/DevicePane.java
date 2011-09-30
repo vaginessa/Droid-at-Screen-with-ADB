@@ -25,7 +25,7 @@ public class DevicePane extends JPanel {
     private DeviceFrame         deviceFrame;
     private AndroidDevice       device;
     private Timer               timer;
-    private int                 updatesPerMinute = 1, scalePercentage = 100;
+    private int                 updatesPerMinute = 60, scalePercentage = 100;
     private boolean             portrait = true, upsideDown = true;
     private AffineTransform     scaleTX, upsideDownTX;
 
