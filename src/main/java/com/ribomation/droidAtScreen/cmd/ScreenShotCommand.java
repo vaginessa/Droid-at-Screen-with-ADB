@@ -17,11 +17,10 @@ import java.io.IOException;
  * @date 30 september 2011, 14:19
  */
 public class ScreenShotCommand extends Command {
-    private static final String     JPG = "jpg";
     private File                    lastFile = null;
 
     public ScreenShotCommand() {
-        setLabel("Screen-Shot");
+        setLabel("Capture");
         setIcon("camera");
         setTooltip("Takes a screen-shot of the current device and saves it as a PNG file.");
         setEnabled(false);

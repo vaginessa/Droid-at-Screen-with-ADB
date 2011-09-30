@@ -18,8 +18,7 @@ public class AdbExePathCommand extends Command {
     public AdbExePathCommand() {
         setLabel("ADB Executable Path");
         setTooltip("Sets the path to the Android Device Debugger (ADB) executable");
-//        setIcon("Shutdown");
-//        setMnemonic('Q');
+        setIcon("app");
     }
 
     @Override
@@ -90,7 +89,6 @@ public class AdbExePathCommand extends Command {
     private JTextArea createInfoPane() {
         JTextArea infoPane = new JTextArea();
         infoPane.setEditable(false);
-//        infoPane.setEnabled(false);
         infoPane.setColumns(50);
         infoPane.setRows(4);
         infoPane.setLineWrap(true);

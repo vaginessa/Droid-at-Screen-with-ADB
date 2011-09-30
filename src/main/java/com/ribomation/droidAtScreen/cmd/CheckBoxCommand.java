@@ -21,8 +21,6 @@ public abstract class CheckBoxCommand extends Command {
     @Override
     public AbstractButton newButton() {
         AbstractButton b = new JCheckBox();
-//        b.setVerticalTextPosition(AbstractButton.BOTTOM);
-//        b.setHorizontalTextPosition(AbstractButton.CENTER);
         b.setSelected(getPreferenceValue());
         return b;
     }
@@ -37,6 +35,7 @@ public abstract class CheckBoxCommand extends Command {
 
     protected abstract void notifyApplication(Application app, boolean selected);
     protected abstract String getPreferencesKey();
+    protected boolean getDefaultValue() { return true; }
 
     public boolean  isSelected() {
         return getPreferenceValue();
@@ -48,6 +47,7 @@ public abstract class CheckBoxCommand extends Command {
     }
 
     protected boolean getPreferenceValue() {
-        return getApplication().getPreferences().getBoolean(getPreferencesKey(), true);
+        return getApplication().getPreferences().getBoolean(getPreferencesKey(), getDefaultValue());
     }
+
 }

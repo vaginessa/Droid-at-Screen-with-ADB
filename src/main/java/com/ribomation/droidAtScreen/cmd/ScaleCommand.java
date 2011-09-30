@@ -35,6 +35,7 @@ public class ScaleCommand extends Command {
         dialog.setContentPane(optPane);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.pack();
+        dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
     }
 

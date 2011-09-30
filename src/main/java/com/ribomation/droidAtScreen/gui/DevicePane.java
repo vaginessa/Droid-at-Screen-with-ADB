@@ -26,49 +26,57 @@ public class DevicePane extends JPanel {
     private AndroidDevice       device;
     private Timer               timer;
     private int                 frameRate = 15, scalePercentage = 100;
-    private boolean             portrait = true;
+    private boolean             portrait = true, upsideDown = true;
     private AffineTransformOp   transformOP = null;
+    private AffineTransform     scaleTX, upsideDownTX;
 
-    public DevicePane(DeviceFrame deviceFrame, AndroidDevice dev, boolean portrait, int scalePercentage, int frameRate) {
+    public DevicePane(DeviceFrame deviceFrame, AndroidDevice dev, boolean portrait, boolean upsideDown, int scalePercentage, int frameRate) {
         super(new BorderLayout(), true);
         this.deviceFrame = deviceFrame;
         this.device = dev;
-        setPortrait(portrait);
-        setScalePercentage(scalePercentage);
-        setFrameRate(frameRate);
+        this.portrait = portrait;
+        this.upsideDown = upsideDown;
+        this.scalePercentage = scalePercentage;
+        this.frameRate = frameRate;
+
+        updateView();
+//        setPortrait(portrait);
+//        setScalePercentage(scalePercentage);
+//        setFrameRate(frameRate);
     }
 
     public AndroidDevice getDevice() {
         return device;
     }
 
-    public void setPortrait(boolean portrait) {
-        this.portrait = portrait;
-        updateSize();
-    }
+//    public void setPortrait(boolean portrait) {
+//        this.portrait = portrait;
+//        updateView();
+//    }
 
-    public void setScalePercentage(int scalePercentage) {
-        if ((scalePercentage < 10) || (300 < scalePercentage)) {
-            throw new IllegalArgumentException("Scale % is invalid: " + scalePercentage);
-        }
-        this.scalePercentage = scalePercentage;
+//    public void setScalePercentage(int scalePercentage) {
+//        if ((scalePercentage < 10) || (300 < scalePercentage)) {
+//            throw new IllegalArgumentException("Scale % is invalid: " + scalePercentage);
+//        }
+//        this.scalePercentage = scalePercentage;
+//        this.scaleTX = null;
+//
+////        if (scalePercentage != 100) {
+////            double scale = scalePercentage / 100.0;
+////            AffineTransform tx = AffineTransform.getScaleInstance(scale, scale);
+////            transformOP = new AffineTransformOp(tx, hints);
+////        } else {
+////            transformOP = null;
+////        }
+//        updateView();
+//    }
 
-        if (scalePercentage != 100) {
-            double scale = scalePercentage / 100.0;
-            AffineTransform tx = AffineTransform.getScaleInstance(scale, scale);
-            transformOP = new AffineTransformOp(tx, hints);
-        } else {
-            transformOP = null;
-        }
-        updateSize();
-    }
-
-    public void setFrameRate(int rate) {
-        if (rate <= 0) {
-            throw new IllegalArgumentException("Frame rate must be a positive number. Value=" + rate);
-        }
-        this.frameRate = rate;
-    }
+//    public void setFrameRate(int rate) {
+//        if (rate <= 0) {
+//            throw new IllegalArgumentException("Frame rate must be a positive number. Value=" + rate);
+//        }
+//        this.frameRate = rate;
+//    }
 
     public BufferedImage getLastScreenShot() {
         return lastScreenShot;
@@ -91,17 +99,37 @@ public class DevicePane extends JPanel {
 
     private BufferedImage fetchScreenshot() {
         BufferedImage img = device.getScreenShot(!this.portrait);
-        if (transformOP != null && img != null) {
-            img = transformOP.filter(img, null);
+        if (img == null) return null;
+        
+//        if (transformOP != null && img != null) {
+//            img = transformOP.filter(img, null);
+//        }
+
+        if (scalePercentage != 100) {
+            if (scaleTX == null) {
+                double scale = scalePercentage / 100.0;
+                scaleTX = AffineTransform.getScaleInstance(scale, scale);
+            }
+            img = new AffineTransformOp(scaleTX, hints).filter(img, null);
         }
+        
+        if (upsideDown) {
+            if (upsideDownTX == null) {
+                double x = img.getWidth() / 2;
+                double y = img.getHeight() / 2;
+                upsideDownTX = AffineTransform.getQuadrantRotateInstance(2, x, y);
+            }
+            img = new AffineTransformOp(upsideDownTX, hints).filter(img, null);
+        }
+        
         return img;
     }
 
-    protected void  updateSize() {
-        updateSize( fetchScreenshot() );
+    protected void updateView() {
+        updateView(fetchScreenshot());
     }
 
-    protected void  updateSize(BufferedImage img) {
+    protected void updateView(BufferedImage img) {
         Dimension sz = new Dimension(img.getWidth(), img.getHeight());
         this.setMinimumSize(sz);
         this.setSize(sz);
@@ -139,7 +167,7 @@ public class DevicePane extends JPanel {
             try {
                 update();
             } catch (Exception e) {
-                log.debug(e.getMessage());
+                log.debug(e.getMessage(),e);
             }
             busy.set(false);
         }

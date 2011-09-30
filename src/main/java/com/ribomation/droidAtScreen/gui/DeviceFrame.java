@@ -22,9 +22,12 @@ public class DeviceFrame extends JFrame {
     private static AtomicInteger    frameCount = new AtomicInteger(1);
 
     public DeviceFrame(Application app, AndroidDevice device, boolean portrait, int scalePercentage, int frameRate) {
+        this(app, device, portrait, false, scalePercentage, frameRate);
+    }
+    public DeviceFrame(Application app, AndroidDevice device, boolean portrait, boolean upsideDown, int scalePercentage, int frameRate) {
 //        super("Android Device - " + device.toNames());
-        log.debug(String.format("DeviceFrame(device=%s, portrait=%s, scalePercentage=%d, frameRate=%d)",
-                device, portrait, scalePercentage, frameRate));
+        log.debug(String.format("DeviceFrame(device=%s, portrait=%s, upsideDown=%s, scalePercentage=%d, frameRate=%d)",
+                device, portrait, upsideDown, scalePercentage, frameRate));
         this.app = app;
         setFrameName( device.getName() );
 
@@ -40,7 +43,7 @@ public class DeviceFrame extends JFrame {
 //        ImageTransformer scale       = new ScaleImageTransformer(scalePercentage);
 //        device = new TransformingAndroidDevice(scale, new TransformingAndroidDevice(orientation, device));
 
-        pane   = new DevicePane(this, device, portrait, scalePercentage, frameRate);
+        pane   = new DevicePane(this, device, portrait, upsideDown, scalePercentage, frameRate);
 //        pane.setPortrait(portrait);
 //        pane.setScalePercentage(scalePercentage);
 //        pane.setFrameRate(frameRate);

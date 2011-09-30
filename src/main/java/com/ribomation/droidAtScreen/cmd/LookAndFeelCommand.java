@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * DESCRIPTION
+ * Prompts the user for a Look&Feel to set for the UI.
  *
  * @user jens
  * @date 2010-jan-18 10:35:20
@@ -16,8 +16,7 @@ public class LookAndFeelCommand extends Command {
     public LookAndFeelCommand() {
         setLabel("Set Look&Feel");
         setTooltip("Let you choose which Look&Feel to use.");
-//        setIcon("quit_16x16");
-//        setMnemonic('Q');
+        setIcon("lookandfeel");
     }
 
     @Override

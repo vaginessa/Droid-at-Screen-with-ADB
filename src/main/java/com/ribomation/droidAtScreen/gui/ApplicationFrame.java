@@ -121,6 +121,10 @@ public class ApplicationFrame extends JFrame {
         return deviceListModel;
     }
 
+    protected JToolBar createToolbar() {
+        return createToolbar("Orientation", "Scale", "-", "ScreenShot", "Video", "-", "Quit");
+    }
+
     protected JMenuBar createMenubar() {
         JMenuBar     mb = new JMenuBar();
 
@@ -134,26 +138,22 @@ public class ApplicationFrame extends JFrame {
 
     protected JMenu createFileMenu() {
         return createMenu("File", 'F',
-                "ScreenShot", "-", "Quit");
+                "ScreenShot", "Video", "-", "Quit");
     }
 
     protected JMenu createViewMenu() {
         return createMenu("View", 'V',
-                "Orientation", "Scale");
+                "Orientation", "Scale", "UpsideDown");
     }
 
     protected JMenu createOptionsMenu() {
         return createMenu("Options", 'O',
-                "AdbExePath", "-", "AutoShow", "SkipEmulator", "FrameRate", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties");
+                "AdbExePath", "FrameRate", "-", "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties");
     }
 
     protected JMenu createHelpMenu() {
         return createMenu("Help", 'H',
                 "About");
-    }
-
-    protected JToolBar createToolbar() {
-        return createToolbar("ScreenShot", "Orientation", "Scale", "Transform");
     }
 
     protected JMenu createMenu(String name, char mnemonicChar, String... commandNames) {

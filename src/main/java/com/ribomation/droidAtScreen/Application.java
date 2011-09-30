@@ -42,6 +42,8 @@ public interface Application {
 
     void setPortraitMode(boolean portrait);
 
+    void setUpsideDown(boolean upsideDown);
+
     void setFrameRate(int rate);
 
     void savePreferences();
@@ -52,4 +54,5 @@ public interface Application {
 
     void hideDevice(DeviceFrame dev);
     void hideDevice(DeviceFrame dev, boolean doDispose);
+
 }

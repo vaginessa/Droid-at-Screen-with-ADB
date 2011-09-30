@@ -13,10 +13,14 @@ import javax.swing.*;
 public class OrientationCommand extends CheckBoxCommand {
 
     public OrientationCommand() {
-        boolean landscape = getApplication().getPreferences().getBoolean(getPreferencesKey(), false);
-        updateView(landscape);
+        updateView(getPreferenceValue());
         setTooltip("Flip the orientation (portrait | landscape)");
         setEnabled(false);
+    }
+
+    @Override
+    protected boolean getDefaultValue() {
+        return false;
     }
 
     @Override
