@@ -10,12 +10,12 @@ import javax.swing.*;
  * @user jens
  * @date 2010-jan-18 10:35:20
  */
-public class VideoCommand extends Command {
+public class VideoCommand extends Command  {
     public VideoCommand() {
         setLabel("Record");
         setTooltip("Records a series of screen-shots into a video clip.");
-        setIcon("video");
-        setEnabled(false);
+        setIcon("movie");
+        setEnabledOnlyWithDevice(true);
     }
 
     @Override

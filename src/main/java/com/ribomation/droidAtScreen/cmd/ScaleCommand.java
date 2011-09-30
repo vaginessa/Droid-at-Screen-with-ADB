@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
  * @user jens
  * @date 30 september 2011, 14:19
  */
-public class ScaleCommand extends Command {
+public class ScaleCommand extends Command  {
     private static Integer[]           scales = {25,50,75,100,125,150,175,200,250,300};
 
     public ScaleCommand() {
@@ -22,7 +22,7 @@ public class ScaleCommand extends Command {
         setIcon("zoom");
         setTooltip("Sets the projection scale % of the Android Device. 100% is normal size");
         setMnemonic('Q');
-//        setEnabled(false);
+        setEnabledOnlyWithDevice(true);
     }
 
     private void updateView(int scale) {

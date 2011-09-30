@@ -10,18 +10,16 @@ import javax.swing.*;
  * @user jens
  * @date 30 september 2011, 14:19
  */
-public class OrientationCommand extends CheckBoxCommand {
+public class OrientationCommand extends CheckBoxCommand  {
 
     public OrientationCommand() {
         updateView(getPreferenceValue());
         setTooltip("Flip the orientation (portrait | landscape)");
-        setEnabled(false);
+        setEnabledOnlyWithDevice(true);
     }
 
     @Override
-    protected boolean getDefaultValue() {
-        return false;
-    }
+    protected boolean getDefaultValue() { return false; }
 
     @Override
     protected void notifyApplication(Application app, boolean landscape) {

@@ -16,14 +16,14 @@ import java.io.IOException;
  * @user jens
  * @date 30 september 2011, 14:19
  */
-public class ScreenShotCommand extends Command {
+public class ScreenShotCommand extends Command  {
     private File                    lastFile = null;
 
     public ScreenShotCommand() {
         setLabel("Capture");
         setIcon("camera");
         setTooltip("Takes a screen-shot of the current device and saves it as a PNG file.");
-        setEnabled(false);
+        setEnabledOnlyWithDevice(true);
     }
 
     @Override

@@ -27,12 +27,22 @@ public class AboutCommand extends Command {
     protected void doExecute(Application app) {
         JPanel content = new JPanel(new BorderLayout(5, 0));
         content.add(new JLabel(loadPicture("jens-riboe")), BorderLayout.WEST);
-        content.add(new JLabel("<html>" + loadResource("/about.html")), BorderLayout.CENTER);
+        content.add(new JLabel("<html>" + loadResource("/about.html") + systemInfo()), BorderLayout.CENTER);
 
         JOptionPane.showMessageDialog(null,
                 content,
                 app.getName() + " - Version " + app.getVersion(),
                 JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private String systemInfo() {
+        return "<h2>System Information</h2>" +
+                String.format("<p style=\"text-align:left; color:lightGray; \">%s, %s<br/>%s. Version %s</p>",
+                System.getProperty("os.name"),
+                System.getProperty("os.arch"),
+                System.getProperty("java.vm.name"),
+                System.getProperty("java.runtime.version")
+        );
     }
 
     String loadResource(String path) {
