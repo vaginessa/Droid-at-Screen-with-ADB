@@ -116,6 +116,10 @@ public class AdbExePathCommand extends Command {
         return isEmpty( getPreferenceValue() );
     }
 
+    public boolean isDefined() {
+        return !isNotDefined();
+    }
+
     public File getFile() {
         if (isNotDefined()) return null;
         return new File( getPreferenceValue() );

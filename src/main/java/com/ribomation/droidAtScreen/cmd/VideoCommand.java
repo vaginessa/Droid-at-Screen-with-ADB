@@ -15,6 +15,7 @@ public class VideoCommand extends Command {
         setLabel("Record");
         setTooltip("Records a series of screen-shots into a video clip.");
         setIcon("video");
+        setEnabled(false);
     }
 
     @Override

@@ -99,18 +99,27 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
 
     private void postStart() {
         log.debug("postStart");
-        AdbExePathCommand adbPath = Command.find(AdbExePathCommand.class);
-        if (adbPath.isNotDefined()) {
-            String pathAndroidHome = System.getenv("ANDROID_HOME");
-            File adb = new File(pathAndroidHome + "/platform-tools/adb");
-            if (adb.isFile()) {
-                adbPath.setPreferenceValue(adb.getAbsolutePath());
-            } else {
-                adbPath.execute();
-            }
-        } else {
-            setAdbExecutablePath( adbPath.getFile() );
+        
+        AdbExePathCommand adbCmd = Command.find(AdbExePathCommand.class);
+        if (adbCmd.isDefined()) {
+            setAdbExecutablePath( adbCmd.getFile() );
+            return;
         }
+
+        String adbExe = "/platform-tools/adb" + (System.getProperty("os.name","").toLowerCase().startsWith("windows") ? ".exe" : "");
+        File   adbFile = new File(System.getenv("ANDROID_HOME") + adbExe);
+        if (adbFile.isFile()) {
+            adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
+            return;
+        }
+
+        adbFile = new File(System.getenv("ANDROID_SDK_HOME") + adbExe);
+        if (adbFile.isFile()) {
+            adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
+            return;
+        }
+
+        adbCmd.execute();
     }
 
 

@@ -22,6 +22,7 @@ public class ScaleCommand extends Command {
         setIcon("zoom");
         setTooltip("Sets the projection scale % of the Android Device. 100% is normal size");
         setMnemonic('Q');
+//        setEnabled(false);
     }
 
     private void updateView(int scale) {
