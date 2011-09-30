@@ -10,7 +10,7 @@ import java.awt.event.WindowEvent;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * DESCRIPTION
+ * Frame holder for the device image.
  *
  * @user jens
  * @date 2010-jan-17 22:13:20
@@ -25,7 +25,6 @@ public class DeviceFrame extends JFrame {
         this(app, device, portrait, false, scalePercentage, frameRate);
     }
     public DeviceFrame(Application app, AndroidDevice device, boolean portrait, boolean upsideDown, int scalePercentage, int frameRate) {
-//        super("Android Device - " + device.toNames());
         log.debug(String.format("DeviceFrame(device=%s, portrait=%s, upsideDown=%s, scalePercentage=%d, frameRate=%d)",
                 device, portrait, upsideDown, scalePercentage, frameRate));
         this.app = app;
@@ -39,17 +38,7 @@ public class DeviceFrame extends JFrame {
             }
         });
 
-//        ImageTransformer orientation = new OrientationImageTransformer(portrait);
-//        ImageTransformer scale       = new ScaleImageTransformer(scalePercentage);
-//        device = new TransformingAndroidDevice(scale, new TransformingAndroidDevice(orientation, device));
-
         pane   = new DevicePane(this, device, portrait, upsideDown, scalePercentage, frameRate);
-//        pane.setPortrait(portrait);
-//        pane.setScalePercentage(scalePercentage);
-//        pane.setFrameRate(frameRate);
-
-//        JScrollPane scrollPane = new JScrollPane(pane);
-//        scrollPane.setSize(pane.getPreferredSize());
         this.add( pane );
         this.pack();
     }
