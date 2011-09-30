@@ -11,20 +11,19 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * DESCRIPTION
+ * Takes a screen-shot of the current device image.
  *
  * @user jens
- * @date 2010-jan-18 10:35:20
+ * @date 30 september 2011, 14:19
  */
 public class ScreenShotCommand extends Command {
     private static final String     JPG = "jpg";
     private File                    lastFile = null;
 
     public ScreenShotCommand() {
-        setLabel("Save ScreenShot as JPG");
-        setTooltip("Takes a screen-shot of the current device and saves it as JPG file.");
-//        setIcon("quit_16x16");
-//        setMnemonic('Q');
+        setLabel("Screen-Shot");
+        setIcon("camera");
+        setTooltip("Takes a screen-shot of the current device and saves it as a PNG file.");
         setEnabled(false);
     }
 
@@ -35,9 +34,10 @@ public class ScreenShotCommand extends Command {
 
         final BufferedImage     screenShot = dev.getScreenShot();
         JFileChooser            chooser    = new JFileChooser(lastFile);
-        chooser.setSelectedFile(lastFile!=null ? lastFile : new File("droidAtScreen.jpg"));
+        chooser.setCurrentDirectory(null);
+        chooser.setSelectedFile(lastFile!=null ? lastFile : new File("droidAtScreen.png"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG Files", "jpg"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Files", "png"));
 
         int rc = chooser.showSaveDialog(app.getAppFrame());
         if (rc == JFileChooser.APPROVE_OPTION) {
@@ -55,7 +55,7 @@ public class ScreenShotCommand extends Command {
                             if (rc != JOptionPane.YES_OPTION) return;
                         }
 
-                        ImageIO.write(screenShot, JPG, lastFile);
+                        ImageIO.write(screenShot, "png", lastFile);
                     } catch (IOException e) {
                         JOptionPane.showMessageDialog(app.getAppFrame(),
                                 "Failed to save screen-shot file " + lastFile + ". " + e,

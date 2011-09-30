@@ -10,6 +10,7 @@ import javax.swing.*;
  * @user jens
  * @date 2010-jan-18 10:35:20
  */
+@Deprecated
 public class PortraitCommand extends CheckBoxCommand {
 
     public PortraitCommand() {

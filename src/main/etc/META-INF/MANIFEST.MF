@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: com.ribomation.droidAtScreen.DroidAtScreenApplication
-Class-Path: log4j-1.2.14.jar ddmlib-r04.jar android-1.5.jar
+

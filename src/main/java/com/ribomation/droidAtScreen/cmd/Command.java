@@ -139,7 +139,10 @@ public abstract class Command extends AbstractAction {
     }
 
     protected AbstractButton newButton() {
-        return new JButton();
+        JButton b = new JButton();
+        b.setVerticalTextPosition(AbstractButton.BOTTOM);
+        b.setHorizontalTextPosition(AbstractButton.CENTER);
+        return b;
     }
 
     public JPanel createPane() {

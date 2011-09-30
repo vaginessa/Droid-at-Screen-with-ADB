@@ -7,36 +7,35 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
 /**
- * DESCRIPTION
+ * Set the device frame projection scale, as a percentage.
  *
  * @user jens
- * @date 2010-jan-18 10:35:20
+ * @date 30 september 2011, 14:19
  */
 public class ScaleCommand extends Command {
     private static Integer[]           scales = {25,50,75,100,125,150,175,200,250,300};
 
     public ScaleCommand() {
-        setLabel("Projection Scale");
+        int scale = getPreferenceValue();
+        updateView(scale);
+        setIcon("zoom");
         setTooltip("Sets the projection scale % of the Android Device. 100% is normal size");
-//        setIcon("Shutdown");
-//        setMnemonic('Q');
+        setMnemonic('Q');
+    }
+
+    private void updateView(int scale) {
+        setLabel(String.format("Scale (%d%%)", scale));
     }
 
     @Override
     protected void doExecute(Application app) {
-        Integer percentage = (Integer) JOptionPane.showInputDialog(app.getAppFrame(),
-                "Choose the projection scale %",
-                "Scale %?",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                scales,
-                getPreferenceValue());
-        if (percentage == null) return;
-
-        setPreferenceValue(percentage);
-        getApplication().setScale(percentage);
+        JDialog dialog = new JDialog(app.getAppFrame(), "Set the Device Frame Scale", true);
+        JOptionPane optPane = new JOptionPane(createScalePane(dialog), JOptionPane.QUESTION_MESSAGE);
+        dialog.setContentPane(optPane);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.pack();
+        dialog.setVisible(true);
     }
 
     protected String getPreferencesKey() {
@@ -56,8 +55,7 @@ public class ScaleCommand extends Command {
         return getPreferenceValue();
     }
 
-/*
-    private JPanel createScalePane() {
+    private JPanel createScalePane(final JDialog dialog) {
         JPanel   p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.setBorder( BorderFactory.createTitledBorder("Projection Scale") );
 
@@ -65,7 +63,9 @@ public class ScaleCommand extends Command {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int percentage = Integer.parseInt( e.getActionCommand() );
+                dialog.dispose();
                 setPreferenceValue(percentage);
+                updateView(percentage);
                 getApplication().setScale(percentage);
             }
         };
@@ -89,6 +89,5 @@ public class ScaleCommand extends Command {
         }
         return r;
     }
-*/
 
 }

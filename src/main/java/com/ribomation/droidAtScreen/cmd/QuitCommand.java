@@ -5,7 +5,7 @@ import com.ribomation.droidAtScreen.Application;
 import javax.swing.*;
 
 /**
- * DESCRIPTION
+ * Quits the application, but asking first.
  *
  * @user jens
  * @date 2010-jan-18 10:35:20
@@ -20,17 +20,22 @@ public class QuitCommand extends Command {
 
     @Override
     protected void doExecute(Application app) {
+        boolean askBeforeQuit = app.getPreferences().getBoolean("ask-before-quit", true);
+        if (!askBeforeQuit || askUser(app)) doQuit(app);
+    }
+
+    private void    doQuit(Application app) {
+        JFrame f = app.getAppFrame();
+        if (f != null) f.dispose();
+        System.exit(0);
+    }
+
+    private boolean askUser(Application app) {
         int rc = JOptionPane.showConfirmDialog(app.getAppFrame(),
                 "Do you really want to quit?",
                 "Quit?",
                 JOptionPane.OK_CANCEL_OPTION
         );
-        if (rc == JOptionPane.OK_OPTION) {
-            JFrame f = app.getAppFrame();
-            if (f != null) {
-                f.dispose();
-            }
-            System.exit(0);
-        }
+        return rc == JOptionPane.OK_OPTION;
     }
 }

@@ -4,6 +4,10 @@ import com.ribomation.droidAtScreen.Application;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * DESCRIPTION
@@ -21,17 +25,39 @@ public class AboutCommand extends Command {
 
     @Override
     protected void doExecute(Application app) {
-        String txt = "<html>This application was a quick hack by<br/>" +
-                "Jens Riboe <br/><a href='mailto:jens.riboe@ribomation.com'>jens.riboe@ribomation.com</a><br/>" +
-                "<a href='http://blog.ribomation.com/'>http://blog.ribomation.com/</a><br/>" +
-                "<i>Stockholm in January 2009</i>.";
+//        String txt = "<html>This application was a quick hack by<br/>" +
+//                "Jens Riboe <br/><a href='mailto:jens.riboe@ribomation.com'>jens.riboe@ribomation.com</a><br/>" +
+//                "<a href='http://blog.ribomation.com/'>http://blog.ribomation.com/</a><br/>" +
+//                "<i>Stockholm in January 2010</i>.";
+
         JPanel content = new JPanel(new BorderLayout(5, 0));
         content.add(new JLabel(loadPicture("jens-riboe")), BorderLayout.WEST);
-        content.add(new JLabel(txt), BorderLayout.CENTER);
+        content.add(new JLabel("<html>" + loadResource("/about.html")), BorderLayout.CENTER);
 
         JOptionPane.showMessageDialog(null,
                 content,
                 app.getName() + " - Version " + app.getVersion(),
                 JOptionPane.PLAIN_MESSAGE);
+    }
+
+    String loadResource(String path) {
+        InputStream is = this.getClass().getResourceAsStream(path);
+        if (is == null) {
+            throw new RuntimeException("Failed to load text resource: " + path);
+        }
+
+        try {
+            StringBuilder   buf = new StringBuilder(1000);
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while ((line = in.readLine()) != null) {
+                buf.append(line);
+            }
+            in.close();
+
+            return buf.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load text resource: " + path, e);
+        }
     }
 }

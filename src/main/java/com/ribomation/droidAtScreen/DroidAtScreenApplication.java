@@ -31,7 +31,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     private List<AndroidDeviceListener>     deviceListeners = new ArrayList<AndroidDeviceListener>();
     private final String                    appPropertiesPath = "/META-INF/maven/com.ribomation/droidAtScreen/pom.properties";
     private String                          appName = "Droid@Screen";
-    private String                          appVersion = "0.1";
+    private String                          appVersion = "0.0";
 
 
     public static void main(String[] args) {
@@ -176,6 +176,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
 
         Command.get("Show").setEnabled(true);
         Command.get("ScreenShot").setEnabled(true);
+        Command.get("Orientation").setEnabled(true); 
     }
 
 
@@ -353,8 +354,8 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     }
 
     public boolean isPortrait() {
-        PortraitCommand cmd = Command.find(PortraitCommand.class);
-        return cmd.isSelected();
+        OrientationCommand cmd = Command.find(OrientationCommand.class);
+        return !cmd.isSelected();
     }
 
     public int  getScale() {

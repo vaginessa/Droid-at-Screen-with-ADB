@@ -11,6 +11,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * DESCRIPTION
@@ -24,7 +27,7 @@ public class ApplicationFrame extends JFrame {
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
 
     public ApplicationFrame() throws HeadlessException {
-        super("Droid@Screen, version 0.1");
+        super();
     }
 
     public ApplicationFrame(Application application) throws HeadlessException {
@@ -53,7 +56,8 @@ public class ApplicationFrame extends JFrame {
         });
         
         setJMenuBar( createMenubar() );
-        add( createDeviceControlPane() );
+        add(createToolbar(), BorderLayout.NORTH);
+        add( createDeviceControlPane() , BorderLayout.CENTER);
         pack();
     }
 
@@ -68,7 +72,7 @@ public class ApplicationFrame extends JFrame {
     public static void placeInCenterScreen(Window win) {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frame  = win.getSize();
-        win.setLocation((screen.width - frame.width)/2, (screen.height - frame.height)/2);
+        win.setLocation((screen.width - frame.width) / 2, (screen.height - frame.height) / 2);
     }
 
     public static void placeInUpperLeftScreen(Window win) {
@@ -135,12 +139,12 @@ public class ApplicationFrame extends JFrame {
 
     protected JMenu createViewMenu() {
         return createMenu("View", 'V',
-                "Portrait", "Scale");
+                "Orientation", "Scale");
     }
 
     protected JMenu createOptionsMenu() {
         return createMenu("Options", 'O',
-                "AdbExePath", "-", "AutoShow", "SkipEmulator", "FrameRate", "-", "LookAndFeel", "-", "RemoveProperties");
+                "AdbExePath", "-", "AutoShow", "SkipEmulator", "FrameRate", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties");
     }
 
     protected JMenu createHelpMenu() {
@@ -148,7 +152,11 @@ public class ApplicationFrame extends JFrame {
                 "About");
     }
 
-    public JMenu createMenu(String name, char mnemonicChar, String... commandNames) {
+    protected JToolBar createToolbar() {
+        return createToolbar("ScreenShot", "Orientation", "Scale", "Transform");
+    }
+
+    protected JMenu createMenu(String name, char mnemonicChar, String... commandNames) {
         JMenu   m = new JMenu(name);
         m.setMnemonic(mnemonicChar);
 
@@ -163,4 +171,16 @@ public class ApplicationFrame extends JFrame {
         return m;
     }
 
+    protected JToolBar createToolbar(String... commandNames) {
+        JToolBar    tb = new JToolBar();
+        for (String cmdName : commandNames) {
+            if (cmdName.equals("-")) {
+                tb.addSeparator();
+            } else {
+                tb.add( Command.get(cmdName).createButton() );
+            }
+        }
+        return tb;
+    }
+    
 }

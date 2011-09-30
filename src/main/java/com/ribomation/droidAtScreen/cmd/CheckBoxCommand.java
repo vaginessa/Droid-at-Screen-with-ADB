@@ -11,29 +11,25 @@ import javax.swing.*;
  * @date 2010-jan-19 10:36:37
  */
 public abstract class CheckBoxCommand extends Command {
-//    private JToggleButton.ToggleButtonModel     model = new JToggleButton.ToggleButtonModel();
-
     @Override
     public JMenuItem newMenuItem() {
         JCheckBoxMenuItem b = new JCheckBoxMenuItem();
         b.setSelected(getPreferenceValue());
-//        b.setModel(model);
-//        model.setSelected( getPreferenceValue() );
         return b;
     }
 
     @Override
     public AbstractButton newButton() {
         AbstractButton b = new JCheckBox();
+//        b.setVerticalTextPosition(AbstractButton.BOTTOM);
+//        b.setHorizontalTextPosition(AbstractButton.CENTER);
         b.setSelected(getPreferenceValue());
-//        b.setModel(model);
-//        model.setSelected( getPreferenceValue() );
         return b;
     }
 
     @Override
     protected final void doExecute(Application app) {
-        boolean selected = !getPreferenceValue();  //Boolean.TRUE.equals(this.getValue(Action.SELECTED_KEY));
+        boolean selected = !getPreferenceValue();
         getLog().debug("doExecute: selected="+selected);
         setPreferenceValue( selected );
         notifyApplication(app, selected);

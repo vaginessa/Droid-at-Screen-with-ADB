@@ -40,7 +40,7 @@ public interface Application {
 
     void setAdbExecutablePath(File file);
 
-    void setPortraitMode(boolean landscape);
+    void setPortraitMode(boolean portrait);
 
     void setFrameRate(int rate);
 
