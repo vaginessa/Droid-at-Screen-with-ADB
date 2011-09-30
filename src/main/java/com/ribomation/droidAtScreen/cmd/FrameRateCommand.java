@@ -17,27 +17,65 @@ import java.awt.event.ActionListener;
  * @date 2010-jan-18 10:35:20
  */
 public class FrameRateCommand extends Command {
-    private static final int FPS_MIN = 0;
-    private static final int FPS_MAX = 30;
-    private static final int FPS_INIT = 15;
-    private JPanel ratePane;
+    private Integer[] updatesPerMinute = {1, 15, 30, 60, 100};
 
     public FrameRateCommand() {
-        setLabel("Frame Rate");
-        setTooltip("Sets the rate of how many screen-shota should be taken per second");
+        updateView(getRate());
+        setTooltip("Sets the rate of how many screen-shots should be taken per second");
         setIcon("rate");
+    }
+
+    public void updateView(int rate) {
+        setLabel(String.format("Frame Rate (%d frames/min)", rate));
     }
 
     @Override
     protected void doExecute(Application app) {
-        if (ratePane == null) {
-            ratePane = createScalePane();
+        JDialog dialog = new JDialog(app.getAppFrame(), "Set Frame Rate", true);
+        JOptionPane optPane = new JOptionPane(createPane(dialog), JOptionPane.QUESTION_MESSAGE);
+        dialog.setContentPane(optPane);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.pack();
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+    }
+
+    private JPanel createPane(final JDialog dialog) {
+        JPanel   panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panel.setBorder(BorderFactory.createTitledBorder("Frame Rate (frames / minute)"));
+
+        ActionListener action = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int rate = Integer.parseInt( e.getActionCommand() );
+                dialog.dispose();
+                setPreferenceValue(rate);
+                updateView(rate);
+                getApplication().setFrameRate(rate);
+            }
+        };
+
+        ButtonGroup     group = new ButtonGroup();
+        for (int count : updatesPerMinute) {
+            JRadioButton rb = createButton(count, action);
+            group.add(rb);
+            panel.add(rb);
         }
 
-        JOptionPane.showMessageDialog(app.getAppFrame(),
-                ratePane,
-                "Screen-shot Frame Rate",
-                JOptionPane.QUESTION_MESSAGE);
+        return panel;
+    }
+
+    private JRadioButton    createButton(int numUpdates, ActionListener action) {
+        String lbl = Integer.toString(numUpdates);
+
+        JRadioButton r = new JRadioButton(numUpdates == 100 ? "Fastest" : lbl);
+        r.setActionCommand(lbl);
+        r.addActionListener(action);
+        if (numUpdates == getPreferenceValue()) {
+            r.setSelected(true);
+        }
+
+        return r;
     }
 
     protected String getPreferencesKey() {
@@ -50,39 +88,11 @@ public class FrameRateCommand extends Command {
     }
 
     protected int getPreferenceValue() {
-        return getApplication().getPreferences().getInt(getPreferencesKey(), FPS_INIT);
+        return getApplication().getPreferences().getInt(getPreferencesKey(), 1);
     }
 
     public int getRate() {
         return getPreferenceValue();
-    }
-
-    private JPanel createScalePane() {
-        ChangeListener action = new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JSlider   slider = (JSlider)e.getSource();
-                if (!slider.getValueIsAdjusting()) {
-                    int fps = slider.getValue();
-                    if (fps < 1) fps = 1;
-                    
-                    setPreferenceValue( fps );
-                    getApplication().setFrameRate(fps);
-                }
-            }
-        };
-        JSlider framesPerSecond = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, getPreferenceValue());
-        framesPerSecond.addChangeListener(action);
-        framesPerSecond.setMajorTickSpacing(10);
-        framesPerSecond.setMinorTickSpacing(1);
-        framesPerSecond.setPaintTicks(true);
-        framesPerSecond.setPaintLabels(true);
-
-        JPanel   p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        p.setBorder( BorderFactory.createTitledBorder("Frame Rate") );
-        p.add(framesPerSecond);
-
-        return p;
     }
 
 }

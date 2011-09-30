@@ -39,7 +39,7 @@ public class AndroidDeviceManager
     public void init() {
         if (getAdbExecutable() != null && getAdb() == null) {
             try {
-                adb = AndroidDebugBridge.createBridge(getAdbExecutable().getCanonicalPath(), false);
+                adb = AndroidDebugBridge.createBridge(getAdbExecutable().getCanonicalPath(), true);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to created the absolute path to the ADB executable: " + getAdbExecutable());
             }

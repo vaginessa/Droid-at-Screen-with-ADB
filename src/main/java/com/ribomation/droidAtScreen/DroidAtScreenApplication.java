@@ -196,13 +196,6 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
                 deviceFrame.dispose();
             }
         }
-
-        if (devices.isEmpty()) {
-            Command.get("ScreenShot").setEnabled(false);
-        }
-        if (deviceManager.getDevices().isEmpty()) {
-            Command.get("Show").setEnabled(false);            
-        }
     }
 
     public void hideDevice(AndroidDevice dev) {
@@ -342,7 +335,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     }
 
     @Override
-    public void setFrameRate(int value) { //todo: fix/remove this
+    public void setFrameRate(int value) {
         log.debug("setFrameRate: " + value);
         updateDevice( getSelectedDevice() );
     }

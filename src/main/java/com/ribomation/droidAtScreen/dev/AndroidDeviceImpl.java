@@ -79,11 +79,13 @@ public class AndroidDeviceImpl implements AndroidDevice, Comparable<AndroidDevic
                 screenShot = screenShot.getRotated();
             }
 
-            BufferedImage image = new BufferedImage(screenShot.width, screenShot.height, BufferedImage.TYPE_INT_ARGB);
+            final int H = screenShot.height;
+            final int W = screenShot.width;
+            BufferedImage image = new BufferedImage(W, H, BufferedImage.TYPE_INT_ARGB);
             int pixelIndexIncrement = screenShot.bpp >> 3;
 
-            for (int y = 0, pixelIdx = 0; y < screenShot.height; y++) {
-                for (int x = 0; x < screenShot.width; x++, pixelIdx += pixelIndexIncrement) {
+            for (int y = 0, pixelIdx = 0; y < H; y++) {
+                for (int x = 0; x < W; x++, pixelIdx += pixelIndexIncrement) {
                     image.setRGB(x, y, screenShot.getARGB(pixelIdx));
                 }
             }

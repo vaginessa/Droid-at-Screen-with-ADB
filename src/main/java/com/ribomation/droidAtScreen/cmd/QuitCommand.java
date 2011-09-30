@@ -12,8 +12,8 @@ import javax.swing.*;
  */
 public class QuitCommand extends Command {
     public QuitCommand() {
-        setLabel("Quit");
-        setTooltip("Quits the application");
+        setLabel(" Exit ");
+        setTooltip("Exits the application");
         setIcon("exit");
         setMnemonic('Q');
     }
