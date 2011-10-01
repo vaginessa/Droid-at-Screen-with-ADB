@@ -26,9 +26,23 @@ public class AboutCommand extends Command {
 
     @Override
     protected void doExecute(Application app) {
+        ImageIcon image = GuiUtil.loadPicture("jens-riboe");
+        String aboutText = loadResource("/about.html");
+        String linkText = loadResource("/about-links.html");
+        String systemText = loadResource("/about-system.html");
+        systemText = String.format(systemText, System.getProperty("os.name"),
+                System.getProperty("os.arch"),
+                System.getProperty("java.vm.name"),
+                System.getProperty("java.runtime.version"));
+
+//        JPanel south = new JPanel(new GridLayout(2,1));
+//        south.add(new JLabel("<html>"+linkText));
+//        south.add(new JLabel("<html>"+systemText));
+        
         JPanel content = new JPanel(new BorderLayout(5, 0));
-        content.add(new JLabel(GuiUtil.loadPicture("jens-riboe")), BorderLayout.WEST);
-        content.add(new JLabel("<html>" + loadResource("/about.html") + systemInfo()), BorderLayout.CENTER);
+        content.add(new JLabel(image), BorderLayout.WEST);
+        content.add(new JLabel("<html>" + aboutText), BorderLayout.CENTER);
+        content.add(new JLabel("<html>"+linkText+systemText), BorderLayout.SOUTH);
 
         JOptionPane.showMessageDialog(null,
                 content,
@@ -36,15 +50,15 @@ public class AboutCommand extends Command {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
-    private String systemInfo() {
-        return "<h2>System Information</h2>" +
-                String.format("<p style=\"text-align:left; color:lightGray; \">%s, %s<br/>%s. Version %s</p>",
-                System.getProperty("os.name"),
-                System.getProperty("os.arch"),
-                System.getProperty("java.vm.name"),
-                System.getProperty("java.runtime.version")
-        );
-    }
+//    private String systemInfo() {
+//        return "<h2>System Information</h2>" +
+//                String.format("<p style=\"text-align:left; color:lightGray; \">%s, %s<br/>%s. Version %s</p>",
+//                System.getProperty("os.name"),
+//                System.getProperty("os.arch"),
+//                System.getProperty("java.vm.name"),
+//                System.getProperty("java.runtime.version")
+//        );
+//    }
 
     String loadResource(String path) {
         InputStream is = this.getClass().getResourceAsStream(path);
