@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.gui.GuiUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,14 +72,14 @@ public class CommandTest {
 
     @Test
     public void testLoadIcon() throws Exception {
-        Icon i = target.loadIcon("about");
+        Icon i = GuiUtil.loadIcon("about");
         assertThat(i, notNullValue());
         assertThat(i, instanceOf(Icon.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testLoadInvalidIcon() throws Exception {
-        target.loadIcon("Xyz");
+        GuiUtil.loadIcon("Xyz");
     }
 
     @Test

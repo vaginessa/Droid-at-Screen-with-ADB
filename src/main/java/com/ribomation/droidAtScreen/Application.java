@@ -41,7 +41,8 @@ public interface Application {
 
     void setAdbExecutablePath(File file);
 
-    void setPortraitMode(boolean portrait);
+//    void setPortraitMode(boolean portrait);
+    void setLandscapeMode(boolean portrait);
 
     void setUpsideDown(boolean upsideDown);
 

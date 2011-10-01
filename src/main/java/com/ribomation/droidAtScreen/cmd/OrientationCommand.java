@@ -23,7 +23,7 @@ public class OrientationCommand extends CheckBoxCommand  {
 
     @Override
     protected void notifyApplication(Application app, boolean landscape) {
-        app.setPortraitMode(!landscape);
+        app.setLandscapeMode(landscape);
         updateView(landscape);
     }
 

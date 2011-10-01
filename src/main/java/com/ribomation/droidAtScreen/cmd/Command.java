@@ -3,6 +3,7 @@ package com.ribomation.droidAtScreen.cmd;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
+import com.ribomation.droidAtScreen.gui.GuiUtil;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -131,7 +132,7 @@ public abstract class Command extends AbstractAction implements AndroidDeviceLis
         putValue(Action.LARGE_ICON_KEY, ico);
     }
     protected void setIcon(String icoName) {
-        setIcon( loadIcon(icoName) );
+        setIcon(GuiUtil.loadIcon(icoName));
     }
 
     public String getAccelerator() {
@@ -190,22 +191,6 @@ public abstract class Command extends AbstractAction implements AndroidDeviceLis
         Command.application = application;
     }
 
-    protected ImageIcon loadIcon(String name) {
-        return loadImage(name, "png");
-    }
-
-    protected ImageIcon loadPicture(String name) {
-        return loadImage(name, "jpg");
-    }
-
-    protected ImageIcon loadImage(String name, String ext) {
-        String path = "/img/" + name + "." + ext.toLowerCase();
-        URL url = this.getClass().getResource(path);
-        if (url != null) {
-            return new ImageIcon(url);
-        }
-        throw new IllegalArgumentException("Image not found: " + path);
-    }
 
     protected static Command loadCommand(String name) {
         String clsName = Command.class.getPackage().getName() + "." + toTitleCase(name) + "Command";

@@ -4,6 +4,7 @@ import com.ribomation.droidAtScreen.cmd.Command;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 /**
  * Util class with a collection of GUI helper methods.
@@ -52,5 +53,22 @@ public class GuiUtil {
         return tb;
     }
 
+    public static ImageIcon loadIcon(String name) {
+        return loadImage(name, "png");
+    }
 
+    public static ImageIcon loadPicture(String name) {
+        return loadImage(name, "jpg");
+    }
+
+    public static ImageIcon loadImage(String name, String ext) {
+        String path = "/img/" + name + "." + ext.toLowerCase();
+        URL url = GuiUtil.class.getResource(path);
+        if (url != null) {
+            return new ImageIcon(url);
+        }
+        throw new IllegalArgumentException("Image not found: " + path);
+    }
+    
+    
 }

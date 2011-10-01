@@ -216,6 +216,15 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
         showDevice(dev);
     }
 
+    public DeviceFrame  getCurrentFrame() {
+        String  devName = (String) getAppFrame().getDeviceList().getSelectedItem();
+        DeviceFrame frame = devices.get(devName);
+        if (frame == null) {
+            throw new RuntimeException("No DeviceFrame with name=" + devName);
+        }
+        return frame;
+    }
+
     @Override
     public AndroidDevice getSelectedDevice() {
         String  devName = (String) getAppFrame().getDeviceList().getSelectedItem();
@@ -319,27 +328,27 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     }
 
     @Override
-    public void setScale(int value) {
-        log.debug("setScale: " + value);
-        updateDevice( getSelectedDevice() );
-    }
-
-    @Override
-    public void setPortraitMode(boolean value) {
-        log.debug("setPortraitMode: " + value);
-        updateDevice( getSelectedDevice() );
+    public void setLandscapeMode(boolean value) {
+        log.debug("setLandscapeMode: " + value);
+        getCurrentFrame().setLandscapeMode(value);
     }
 
     @Override
     public void setUpsideDown(boolean value) {
         log.debug("setUpsideDown: " + value);
-        updateDevice( getSelectedDevice() );
+        getCurrentFrame().setUpsideDown(value);
     }
 
     @Override
     public void setFrameRate(int value) {
         log.debug("setFrameRate: " + value);
-        updateDevice( getSelectedDevice() );
+        getCurrentFrame().setFrameRate(value);
+    }
+
+    @Override
+    public void setScale(int value) {
+        log.debug("setScale: " + value);
+        getCurrentFrame().setScale(value);
     }
 
 

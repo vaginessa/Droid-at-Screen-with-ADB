@@ -44,7 +44,7 @@ public class DeviceFrameTest implements AndroidDeviceListener {
         System.out.println("DeviceFrameTest.connected");
         if (dev.isEmulator()) return;
 
-        DeviceFrame     devGUI = new DeviceFrame(null, dev, false, 75, 10);
+        DeviceFrame     devGUI = new DeviceFrame(null, dev, false, false, 75, 10);
         devGUI.setVisible(true);
     }
 

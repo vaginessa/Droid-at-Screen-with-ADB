@@ -56,6 +56,7 @@ public class ApplicationFrame extends JFrame {
     }
 
     public void  initGUI() {
+        setIconImage(GuiUtil.loadIcon("device").getImage());
         setTitle(getApplication().getName()+", Version "+getApplication().getVersion());
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {

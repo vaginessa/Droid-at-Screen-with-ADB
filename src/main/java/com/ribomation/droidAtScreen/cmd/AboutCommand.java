@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.gui.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +27,7 @@ public class AboutCommand extends Command {
     @Override
     protected void doExecute(Application app) {
         JPanel content = new JPanel(new BorderLayout(5, 0));
-        content.add(new JLabel(loadPicture("jens-riboe")), BorderLayout.WEST);
+        content.add(new JLabel(GuiUtil.loadPicture("jens-riboe")), BorderLayout.WEST);
         content.add(new JLabel("<html>" + loadResource("/about.html") + systemInfo()), BorderLayout.CENTER);
 
         JOptionPane.showMessageDialog(null,
