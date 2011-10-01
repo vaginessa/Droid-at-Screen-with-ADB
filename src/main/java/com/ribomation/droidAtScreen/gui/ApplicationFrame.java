@@ -26,6 +26,16 @@ public class ApplicationFrame extends JFrame {
     private Application             application;
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
 
+    private final String[] toolbar     = {"Orientation", "Scale", "-", "ScreenShot", "Video", "-", "Quit"};
+    private final String[] fileMenu    = {"ScreenShot", "Video", "-", "Quit"};
+    private final String[] viewMenu    = {"Orientation", "Scale", "UpsideDown"};
+    private final String[] helpMenu    = {"About"};
+    private final String[] optionsMenu = {
+            "ImageFormat", "FrameRate",
+            "-", "AutoShow", "SkipEmulator", "AskBeforeQuit",
+            "-", "AdbExePath", "-", "LookAndFeel", "-", "RemoveProperties"
+    };
+
     public ApplicationFrame() throws HeadlessException {
         super();
     }
@@ -56,36 +66,23 @@ public class ApplicationFrame extends JFrame {
         });
         
         setJMenuBar( createMenubar() );
-        add(createToolbar(), BorderLayout.NORTH);
+        add(GuiUtil.createToolbar(toolbar), BorderLayout.NORTH);
         add( createDeviceControlPane() , BorderLayout.CENTER);
         pack();
     }
 
-    public void placeInCenterScreen() {
-        placeInCenterScreen(this);
-    }
-
-    public void  placeInUpperLeftScreen() {
-        placeInUpperLeftScreen(this);
-    }
-
-    public static void placeInCenterScreen(Window win) {
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frame  = win.getSize();
-        win.setLocation((screen.width - frame.width) / 2, (screen.height - frame.height) / 2);
-    }
-
-    public static void placeInUpperLeftScreen(Window win) {
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frame  = win.getSize();
-        win.setLocation(screen.width/4 - frame.width/2, screen.height/4 - frame.height/2);
+    protected JMenuBar createMenubar() {
+        JMenuBar     mb = new JMenuBar();
+        mb.add(GuiUtil.createMenu("File"   , 'F', fileMenu));
+        mb.add(GuiUtil.createMenu("View"   , 'V', viewMenu));
+        mb.add(GuiUtil.createMenu("Options", 'O', optionsMenu));
+        mb.add(GuiUtil.createMenu("Help"   , 'H', helpMenu));
+        return mb;
     }
 
     private JPanel createDeviceControlPane() {
         JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
-
         p.add(createDevicesList());
-
         return p;
     }
 
@@ -109,78 +106,13 @@ public class ApplicationFrame extends JFrame {
         });
 
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        p.setBorder( BorderFactory.createTitledBorder("Devices") );
+        p.setBorder(BorderFactory.createTitledBorder("Devices"));
         p.add(devices);
         p.add( Command.get("Show").createButton() );
-//        p.add( Command.get("Portrait").createButton() );
 
         return p;
     }
 
-    public ComboBoxModel getDeviceList() {
-        return deviceListModel;
-    }
+    public ComboBoxModel getDeviceList() { return deviceListModel; }
 
-    protected JToolBar createToolbar() {
-        return createToolbar("Orientation", "Scale", "-", "ScreenShot", "Video", "-", "Quit");
-    }
-
-    protected JMenuBar createMenubar() {
-        JMenuBar     mb = new JMenuBar();
-
-        mb.add(createFileMenu());
-        mb.add(createViewMenu());
-        mb.add(createOptionsMenu());
-        mb.add(createHelpMenu());
-
-        return mb;
-    }
-
-    protected JMenu createFileMenu() {
-        return createMenu("File", 'F',
-                "ScreenShot", "Video", "-", "Quit");
-    }
-
-    protected JMenu createViewMenu() {
-        return createMenu("View", 'V',
-                "Orientation", "Scale", "UpsideDown");
-    }
-
-    protected JMenu createOptionsMenu() {
-        return createMenu("Options", 'O',
-                "AdbExePath", "FrameRate", "-", "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties");
-    }
-
-    protected JMenu createHelpMenu() {
-        return createMenu("Help", 'H',
-                "About");
-    }
-
-    protected JMenu createMenu(String name, char mnemonicChar, String... commandNames) {
-        JMenu   m = new JMenu(name);
-        m.setMnemonic(mnemonicChar);
-
-        for (String cmdName : commandNames) {
-            if (cmdName.equals("-")) {
-                m.addSeparator();
-            } else {
-                m.add( Command.get(cmdName).createMenuItem() );
-            }
-        }
-
-        return m;
-    }
-
-    protected JToolBar createToolbar(String... commandNames) {
-        JToolBar    tb = new JToolBar();
-        for (String cmdName : commandNames) {
-            if (cmdName.equals("-")) {
-                tb.addSeparator();
-            } else {
-                tb.add( Command.get(cmdName).createButton() );
-            }
-        }
-        return tb;
-    }
-    
 }

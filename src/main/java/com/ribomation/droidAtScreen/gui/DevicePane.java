@@ -84,11 +84,7 @@ public class DevicePane extends JPanel {
     }
 
     private BufferedImage fetchScreenshot() {
-        long start = System.nanoTime();
         BufferedImage img = device.getScreenShot(!this.portrait);
-        long elapsed = System.nanoTime() - start;
-        final double UNIT = 1000 * 1000.0;
-        log.info(String.format("Fetching screen, elapsed time %.3f ms", elapsed / UNIT));
         if (img == null) return null;
 
         if (scalePercentage != 100) {
@@ -119,7 +115,7 @@ public class DevicePane extends JPanel {
     public void start() {
         long updatePeriod = (long) (1000L / (updatesPerMinute / 60.0));
         timer = new Timer("ScreenShot Updater");
-        timer.scheduleAtFixedRate(new Updater(), 1000, updatePeriod);
+        timer.scheduleAtFixedRate(new Updater(), 2000, updatePeriod);
     }
 
     public void  stop() {

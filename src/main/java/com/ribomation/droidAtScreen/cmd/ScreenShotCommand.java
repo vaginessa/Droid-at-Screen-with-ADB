@@ -8,7 +8,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Takes a screen-shot of the current device image.
@@ -17,7 +17,8 @@ import java.io.IOException;
  * @date 30 september 2011, 14:19
  */
 public class ScreenShotCommand extends Command  {
-    private File                    lastFile = null;
+    private File    lastDir = null;
+    private int     count = 1;
 
     public ScreenShotCommand() {
         setLabel("Capture");
@@ -34,40 +35,58 @@ public class ScreenShotCommand extends Command  {
 
     @Override
     protected void doExecute(final Application app) {
-        AndroidDevice dev = app.getSelectedDevice();
+        final AndroidDevice dev = app.getSelectedDevice();
         if (dev == null) return;
 
-        final BufferedImage     screenShot = dev.getScreenShot();
-        JFileChooser            chooser    = new JFileChooser(lastFile);
+        final ImageFormatCommand    fmtCmd   = Command.find(ImageFormatCommand.class);
+        File suggestedFile = new File(String.format("droidAtScreen-%d.%s", count++, fmtCmd.getCurrentFormat().toLowerCase()));
+        
+        final JFileChooser          chooser     = new JFileChooser(lastDir);        
         chooser.setCurrentDirectory(null);
-        chooser.setSelectedFile(lastFile!=null ? lastFile : new File("droidAtScreen.png"));
+        chooser.setSelectedFile(suggestedFile);
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Files", "png"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", fmtCmd.getFormats()));
 
         int rc = chooser.showSaveDialog(app.getAppFrame());
         if (rc == JFileChooser.APPROVE_OPTION) {
-            lastFile = chooser.getSelectedFile();
+            final File imageFile = chooser.getSelectedFile();
+            lastDir = imageFile.getParentFile();
 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        if (lastFile.exists()) {
+                        if (imageFile.exists()) {
                             int rc = JOptionPane.showConfirmDialog(app.getAppFrame(),
-                                    "File '"+lastFile+"' already exist. Do you want to overwrite?",
+                                    "File '" + imageFile + "' already exist. Do you want to overwrite?",
                                     "Overwrite file",
                                     JOptionPane.YES_NO_OPTION);
                             if (rc != JOptionPane.YES_OPTION) return;
                         }
 
-                        ImageIO.write(screenShot, "png", lastFile);
-                    } catch (IOException e) {
+                        BufferedImage   screenShot = dev.getScreenShot();
+                        ImageIO.write(screenShot, getFormat(imageFile), imageFile);
+                    } catch (Exception e) {
                         JOptionPane.showMessageDialog(app.getAppFrame(),
-                                "Failed to save screen-shot file " + lastFile + ". " + e,
-                                "Filed to save file",
+                                "Failed to save file " + imageFile + ". " + e.getMessage(),
+                                "Failure",
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 }
+
+                String getFormat(File f) {
+                    final String name = f.getName();
+                    final int dot = name.lastIndexOf('.');
+                    if (dot > 0) {
+                        String ext = name.substring(dot + 1).toUpperCase();
+                        if (Arrays.asList(fmtCmd.getFormats()).contains(ext)) {
+                            return ext;
+                        }
+                    }
+
+                    throw new RuntimeException("Invalid extension: " + name);
+                }
+                
             });
         }
 
