@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * DESCRIPTION
+ * Shows some info about this app.
  *
  * @user jens
  * @date 2010-jan-18 10:35:20
@@ -35,10 +35,6 @@ public class AboutCommand extends Command {
                 System.getProperty("java.vm.name"),
                 System.getProperty("java.runtime.version"));
 
-//        JPanel south = new JPanel(new GridLayout(2,1));
-//        south.add(new JLabel("<html>"+linkText));
-//        south.add(new JLabel("<html>"+systemText));
-        
         JPanel content = new JPanel(new BorderLayout(5, 0));
         content.add(new JLabel(image), BorderLayout.WEST);
         content.add(new JLabel("<html>" + aboutText), BorderLayout.CENTER);
@@ -49,16 +45,6 @@ public class AboutCommand extends Command {
                 app.getName() + " - Version " + app.getVersion(),
                 JOptionPane.PLAIN_MESSAGE);
     }
-
-//    private String systemInfo() {
-//        return "<h2>System Information</h2>" +
-//                String.format("<p style=\"text-align:left; color:lightGray; \">%s, %s<br/>%s. Version %s</p>",
-//                System.getProperty("os.name"),
-//                System.getProperty("os.arch"),
-//                System.getProperty("java.vm.name"),
-//                System.getProperty("java.runtime.version")
-//        );
-//    }
 
     String loadResource(String path) {
         InputStream is = this.getClass().getResourceAsStream(path);
