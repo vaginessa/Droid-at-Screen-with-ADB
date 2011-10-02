@@ -34,5 +34,5 @@ public class StatusBar extends JPanel {
     public void clear() {
         message("");
     }
-    
+
 }
