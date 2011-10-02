@@ -92,6 +92,7 @@ public class ApplicationFrame extends JFrame {
         return p;
     }
 
+    @Deprecated
     private JPanel createDevicesList() {
         JComboBox devices = new JComboBox(deviceListModel);
         devices.setPreferredSize(new Dimension(200, 20));
