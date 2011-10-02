@@ -110,12 +110,14 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
         File   adbFile = new File(System.getenv("ANDROID_HOME") + adbExe);
         if (adbFile.isFile()) {
             adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
+            setAdbExecutablePath(adbFile.getAbsoluteFile());
             return;
         }
 
         adbFile = new File(System.getenv("ANDROID_SDK_HOME") + adbExe);
         if (adbFile.isFile()) {
             adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
+            setAdbExecutablePath(adbFile.getAbsoluteFile());
             return;
         }
 
@@ -130,6 +132,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     @Override
     public void connected(final AndroidDevice dev) {
         log.debug("connected: dev="+dev);
+        getAppFrame().getStatusBar().message("Connected to " + dev.getName());
 
         if (isSkipEmulator() && dev.isEmulator()) {
             return;
@@ -149,6 +152,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     @Override
     public void disconnected(final AndroidDevice dev) {
         log.debug("disconnected: dev="+dev);
+        getAppFrame().getStatusBar().message("Disconnected from " + dev.getName());
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -210,11 +214,11 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
         }
     }
 
-    public void updateDevice(AndroidDevice dev) {
-        log.debug("updateDevice: "+dev);
-        hideDevice(dev);
-        showDevice(dev);
-    }
+//    public void updateDevice(AndroidDevice dev) {
+//        log.debug("updateDevice: "+dev);
+//        hideDevice(dev);
+//        showDevice(dev);
+//    }
 
     public DeviceFrame  getCurrentFrame() {
         String  devName = (String) getAppFrame().getDeviceList().getSelectedItem();

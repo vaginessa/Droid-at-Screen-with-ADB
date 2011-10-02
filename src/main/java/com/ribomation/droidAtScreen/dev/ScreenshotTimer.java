@@ -1,5 +1,6 @@
 package com.ribomation.droidAtScreen.dev;
 
+import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
 import org.apache.log4j.Logger;
 
@@ -19,15 +20,18 @@ public class ScreenshotTimer extends TimerTask {
     private AtomicBoolean   inProgress = new AtomicBoolean(false);
     private AndroidDevice   device;
     private DeviceFrame     frame;
+    private int             errCount = 0;
+    private Application app;
     private static final Timer timer;
 
     static {
         timer = new Timer("Screenshot Timer");
     }
 
-    public ScreenshotTimer(AndroidDevice device, DeviceFrame frame) {
+    public ScreenshotTimer(AndroidDevice device, DeviceFrame frame, Application app) {
         this.device = device;
         this.frame = frame;
+        this.app = app;
     }
     
     public ScreenshotTimer start(int shotsPerMinute) {
@@ -48,7 +52,16 @@ public class ScreenshotTimer extends TimerTask {
             BufferedImage image = device.getScreenShot(frame.isLandscapeMode());
             frame.setLastScreenshot(image);
         } catch (Exception e) {
-            log.warn("Failed to get screenshot: " + e.getMessage());
+            errCount++;
+            log.warn(String.format("Failed to get screenshot(%d): %s", errCount, e.getMessage()));
+
+            if (errCount > 5) {
+                stop();
+                if (e.getMessage().endsWith("device offline")) {
+                    app.getAppFrame().getStatusBar().message(device.getName() + " is offline");
+                }
+                app.hideDevice(frame);
+            }
         } finally {
             inProgress.set(false);
         }

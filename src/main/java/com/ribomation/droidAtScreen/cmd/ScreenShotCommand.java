@@ -28,12 +28,6 @@ public class ScreenShotCommand extends Command  {
     }
 
     @Override
-    public void setEnabled(boolean newValue) {
-        getLog().info("setEnabled: "+newValue);
-        super.setEnabled(newValue);
-    }
-
-    @Override
     protected void doExecute(final Application app) {
         final AndroidDevice dev = app.getSelectedDevice();
         if (dev == null) return;
@@ -89,6 +83,5 @@ public class ScreenShotCommand extends Command  {
                 
             });
         }
-
     }
 }

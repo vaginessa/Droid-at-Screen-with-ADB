@@ -11,9 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * DESCRIPTION
@@ -25,12 +22,13 @@ public class ApplicationFrame extends JFrame {
     private Logger                  log = Logger.getLogger(ApplicationFrame.class);
     private Application             application;
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
+    private StatusBar               statusBar;
 
-    private final String[] toolbar     = {"Orientation", "Scale", "-", "ScreenShot", "Video", "-", "Quit"};
-    private final String[] fileMenu    = {"ScreenShot", "Video", "-", "Quit"};
-    private final String[] viewMenu    = {"Orientation", "Scale", "UpsideDown"};
-    private final String[] helpMenu    = {"About"};
-    private final String[] optionsMenu = {
+    private final String[] TOOLBAR   = {"Orientation", "Scale", "-", "ScreenShot", "Video", "-", "Quit"};
+    private final String[] FILE_MENU = {"ScreenShot", "Video", "-", "Quit"};
+    private final String[] VIEW_MENU = {"Orientation", "Scale", "UpsideDown"};
+    private final String[] HELP_MENU = {"About"};
+    private final String[] OPTIONS_MENU = {
             "ImageFormat", "FrameRate",
             "-", "AutoShow", "SkipEmulator", "AskBeforeQuit",
             "-", "AdbExePath", "-", "LookAndFeel", "-", "RemoveProperties"
@@ -55,6 +53,12 @@ public class ApplicationFrame extends JFrame {
         this.application = application;
     }
 
+    public StatusBar getStatusBar() {
+        return statusBar;
+    }
+
+    public ComboBoxModel getDeviceList() { return deviceListModel; }
+
     public void  initGUI() {
         setIconImage(GuiUtil.loadIcon("device").getImage());
         setTitle(getApplication().getName()+", Version "+getApplication().getVersion());
@@ -65,19 +69,20 @@ public class ApplicationFrame extends JFrame {
                 Command.find(QuitCommand.class).execute();
             }
         });
-        
+
         setJMenuBar( createMenubar() );
-        add(GuiUtil.createToolbar(toolbar), BorderLayout.NORTH);
+        add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
         add( createDeviceControlPane() , BorderLayout.CENTER);
+        add( statusBar = new StatusBar(application) , BorderLayout.SOUTH);
         pack();
     }
 
     protected JMenuBar createMenubar() {
         JMenuBar     mb = new JMenuBar();
-        mb.add(GuiUtil.createMenu("File"   , 'F', fileMenu));
-        mb.add(GuiUtil.createMenu("View"   , 'V', viewMenu));
-        mb.add(GuiUtil.createMenu("Options", 'O', optionsMenu));
-        mb.add(GuiUtil.createMenu("Help"   , 'H', helpMenu));
+        mb.add(GuiUtil.createMenu("File"   , 'F', FILE_MENU));
+        mb.add(GuiUtil.createMenu("View"   , 'V', VIEW_MENU));
+        mb.add(GuiUtil.createMenu("Options", 'O', OPTIONS_MENU));
+        mb.add(GuiUtil.createMenu("Help"   , 'H', HELP_MENU));
         return mb;
     }
 
@@ -113,7 +118,5 @@ public class ApplicationFrame extends JFrame {
 
         return p;
     }
-
-    public ComboBoxModel getDeviceList() { return deviceListModel; }
 
 }

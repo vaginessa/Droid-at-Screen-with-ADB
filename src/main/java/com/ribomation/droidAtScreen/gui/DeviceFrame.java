@@ -78,7 +78,7 @@ public class DeviceFrame extends JFrame {
 
     public void setFrameRate(int frameRate) {
         if (timer != null) timer.cancel();
-        timer = new ScreenshotTimer(device, this).start(frameRate);
+        timer = new ScreenshotTimer(device, this, app).start(frameRate);
     }
 
     public void setScale(int scalePercentage) {

@@ -28,8 +28,8 @@ public class OrientationCommand extends CheckBoxCommand  {
     }
 
     private void updateView(boolean landscape) {
-        setLabel(landscape ? "Landscape" : "Portrait");
-        setIcon("orientation-" + getLabel().toLowerCase());
+        setLabel(landscape ? "Landscape" : "Portrait ");
+        setIcon("orientation-" + getLabel().toLowerCase().trim());
     }
 
     @Override
