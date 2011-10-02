@@ -25,6 +25,7 @@ public class OrientationCommand extends CheckBoxCommand  {
     protected void notifyApplication(Application app, boolean landscape) {
         app.setLandscapeMode(landscape);
         updateView(landscape);
+        app.getAppFrame().repaint();
     }
 
     private void updateView(boolean landscape) {

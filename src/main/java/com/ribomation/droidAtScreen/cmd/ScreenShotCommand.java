@@ -2,6 +2,7 @@ package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.dev.ScreenImage;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -58,8 +59,8 @@ public class ScreenShotCommand extends Command  {
                             if (rc != JOptionPane.YES_OPTION) return;
                         }
 
-                        BufferedImage   screenShot = dev.getScreenShot();
-                        ImageIO.write(screenShot, getFormat(imageFile), imageFile);
+                        ScreenImage screenShot = dev.getScreenImage();
+                        ImageIO.write(screenShot.toBufferedImage(), getFormat(imageFile), imageFile);
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(app.getAppFrame(),
                                 "Failed to save file " + imageFile + ". " + e.getMessage(),

@@ -1,49 +1,125 @@
 package com.ribomation.droidAtScreen.dev;
 
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.RawImage;
+import com.android.ddmlib.TimeoutException;
+import org.apache.log4j.Logger;
+
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Map;
 
 /**
- * Facade/wrapper around an Android device.
+ * Wrapper around an Android device.
  *
  * @user jens
- * @date 2010-jan-17 12:16:55
+ * @date 2010-jan-17 12:16:55, 2011-Oct-02
  */
-public interface AndroidDevice {
+public class AndroidDevice implements Comparable<AndroidDevice> {
     /**
      * Models the device state
      */
     enum ConnectionState {booting, offline, online}
 
-    /**
-     * Returns its device name.
-     * @return its name
-     */
-    String              getName();
 
-    /**
-     * Returns if true if it's an emulator, i.e., not a physical device.
-     * @return true if not physical device
-     */
-    boolean             isEmulator();
+    private static final double     SECS = 1000 * 1000 * 1000.0D;
+    private static final int        MAX_TIMINGS = 60;
+    private final Logger            log;
+    private final IDevice           target;
+    private final ArrayDeque<Long>  timings = new ArrayDeque<Long>(MAX_TIMINGS);
 
-    /**
-     * Returns its connect state
-     * @return its state
-     */
-    ConnectionState     getState();
+    public AndroidDevice(IDevice target) {
+        this.target = target;
+        log = Logger.getLogger(AndroidDevice.class.getName() + ":" + target.getSerialNumber());
+    }
 
-    /**
-     * Captures and returns a screen-shot from the device.
-     * @return a new screen shot
-     * @throws RuntimeException     if it failed
-     */
-    BufferedImage       getScreenShot();
+    public ScreenImage  getScreenImage() {
+        try {
+            long        start    = System.nanoTime();
+            RawImage    rawImage = target.getScreenshot();
+            long        elapsed  = System.nanoTime() - start;
+            if (rawImage == null) return null;
 
-    /**
-     * Captures and returns a screen-shot from the device.
-     * @param landscapeMode     true if the image should flipped to landscape mode
-     * @return a new screen shot
-     * @throws RuntimeException     if it failed
-     */
-    BufferedImage       getScreenShot(boolean landscapeMode);
+            timings.addLast(elapsed);
+            if (timings.size() > MAX_TIMINGS) timings.removeFirst();
+
+            ScreenImage image = new ScreenImage(rawImage);
+            log.debug(String.format("Captured %s in %.4f secs", image, elapsed / SECS));
+
+            return image;
+        } catch (TimeoutException e) {
+            log.error("Failed to get screenshot", e);
+        } catch (AdbCommandRejectedException e) {
+            log.error("Failed to get screenshot", e);
+        } catch (IOException e) {
+            log.error("Failed to get screenshot", e);
+        }
+        return null;
+    }
+
+    public long getAverageTimings() {
+        if (timings.isEmpty()) return 0;
+        
+        long sum = 0;
+        for (Long t : timings) sum += t;
+        return sum / timings.size();
+    }
+
+    public double getAverageTimingsInSeconds() {
+        return getAverageTimings() / SECS;
+    }
+
+    public ConnectionState getState() {
+        IDevice.DeviceState s = target.getState();
+        if (s == IDevice.DeviceState.ONLINE) return ConnectionState.online;
+        if (s == IDevice.DeviceState.BOOTLOADER) return ConnectionState.booting;
+        if (s == IDevice.DeviceState.OFFLINE) return ConnectionState.offline;
+        return ConnectionState.offline;
+    }
+
+    public String getName() {
+        return target.getSerialNumber();
+    }
+
+    public String getAVDName() {
+        return target.getAvdName();
+    }
+
+    public Map<String, String> getProperties() {
+        return target.getProperties();
+    }
+
+    public boolean isEmulator() {
+        return target.isEmulator();
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " (" + (isEmulator() ? "emulator" : "device") + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        System.out.printf("AndroidDevice.equals: %s == %s%n", this, obj);
+
+        if (this == obj) return true;
+        if (!(obj instanceof AndroidDevice)) return false;
+
+        AndroidDevice that = (AndroidDevice) obj;
+        return this.getName().equals( that.getName() );
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getName().hashCode();
+    }
+
+    @Override
+    public int compareTo(AndroidDevice that) {
+        return this.getName().compareTo( that.getName() );
+    }
+    
+    
 }
