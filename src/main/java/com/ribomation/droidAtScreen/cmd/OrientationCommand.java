@@ -25,7 +25,7 @@ public class OrientationCommand extends CheckBoxCommand  {
     protected void notifyApplication(Application app, boolean landscape) {
         app.setLandscapeMode(landscape);
         updateView(landscape);
-        app.getAppFrame().repaint();
+        app.getAppFrame().validate();
     }
 
     private void updateView(boolean landscape) {
@@ -36,6 +36,10 @@ public class OrientationCommand extends CheckBoxCommand  {
     @Override
     protected String getPreferencesKey() {
         return "landscape-mode";
+    }
+
+    public boolean isLandscape() {
+        return getPreferenceValue();
     }
 
     @Override

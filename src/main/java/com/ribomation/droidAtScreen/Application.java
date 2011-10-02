@@ -7,6 +7,8 @@ import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.Collection;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 /**
@@ -19,7 +21,7 @@ public interface Application {
 
     ApplicationFrame getAppFrame();
 
-    AndroidDevice       getSelectedDevice();
+//    AndroidDevice       getSelectedDevice();
 
     String getName();
 
@@ -52,9 +54,12 @@ public interface Application {
 
     void destroyPreferences();
 
-    void showDevice(AndroidDevice dev);
+//    void showDevice(AndroidDevice dev);
 
-    void hideDevice(DeviceFrame dev);
-    void hideDevice(DeviceFrame dev, boolean doDispose);
+//    void hideDevice(DeviceFrame dev);
+//    void hideDevice(DeviceFrame dev, boolean doDispose);
 
+    DeviceFrame getSelectedDevice();
+
+    Map<String, DeviceFrame> getDevices();
 }

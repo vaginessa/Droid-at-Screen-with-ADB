@@ -1,7 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
-import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
 /**
  * DESCRIPTION
@@ -18,9 +18,9 @@ public class ShowCommand extends Command  {
 
     @Override
     protected void doExecute(Application app) {
-        AndroidDevice selectedDevice = app.getSelectedDevice();
+        DeviceFrame selectedDevice = app.getSelectedDevice();
         if (selectedDevice == null) return;
         
-        app.showDevice(selectedDevice);
+        selectedDevice.setVisibleEnabled(true);
     }
 }

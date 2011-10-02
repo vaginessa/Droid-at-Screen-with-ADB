@@ -3,11 +3,11 @@ package com.ribomation.droidAtScreen.cmd;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.ScreenImage;
+import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
 
@@ -30,8 +30,9 @@ public class ScreenShotCommand extends Command  {
 
     @Override
     protected void doExecute(final Application app) {
-        final AndroidDevice dev = app.getSelectedDevice();
-        if (dev == null) return;
+        final DeviceFrame frame = app.getSelectedDevice();
+        if (frame == null) return;
+//        final AndroidDevice dev = frame.getDevice();
 
         final ImageFormatCommand    fmtCmd   = Command.find(ImageFormatCommand.class);
         File suggestedFile = new File(String.format("droidAtScreen-%d.%s", count++, fmtCmd.getCurrentFormat().toLowerCase()));
@@ -59,7 +60,7 @@ public class ScreenShotCommand extends Command  {
                             if (rc != JOptionPane.YES_OPTION) return;
                         }
 
-                        ScreenImage screenShot = dev.getScreenImage();
+                        ScreenImage screenShot = frame.getLastScreenshot();
                         ImageIO.write(screenShot.toBufferedImage(), getFormat(imageFile), imageFile);
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(app.getAppFrame(),

@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
 import javax.swing.*;
 import java.util.Set;
@@ -30,16 +31,20 @@ public class LookAndFeelCommand extends Command {
                 UIManager.getLookAndFeel().getName());
         if (lafName == null) return;
 
-        Runnable task = new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
                     UIManager.setLookAndFeel( findClassName(lafName) );
                     SwingUtilities.updateComponentTreeUI(app.getAppFrame());
                     app.getAppFrame().pack();
+
+                    for (DeviceFrame frame : app.getDevices().values()) {
+                        SwingUtilities.updateComponentTreeUI(frame);
+                        frame.pack();
+                    }
                 } catch (Exception e) {}
             }
-        };
-        SwingUtilities.invokeLater(task);
+        });
     }
 
     protected String[] toNames(UIManager.LookAndFeelInfo[] info) {

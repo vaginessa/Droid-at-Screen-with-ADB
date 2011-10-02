@@ -59,7 +59,8 @@ public class ScreenshotTimer extends TimerTask {
                 if (e.getMessage().endsWith("device offline")) {
                     app.getAppFrame().getStatusBar().message(device.getName() + " is offline");
                 }
-                app.hideDevice(frame);
+                frame.setVisibleEnabled(false);
+                frame.dispose();
             }
         } finally {
             inProgress.set(false);

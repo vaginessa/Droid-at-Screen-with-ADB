@@ -21,9 +21,12 @@ import java.awt.event.WindowEvent;
 public class ApplicationFrame extends JFrame {
     private Logger                  log = Logger.getLogger(ApplicationFrame.class);
     private Application             application;
+//    @Deprecated
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
     private StatusBar               statusBar;
+//    private DevicesPane             devices;
 
+//    private final String[] TOOLBAR   = {"ImageFormat", "LookAndFeel", "AdbExePath", "About", "Quit"};
     private final String[] TOOLBAR   = {"Orientation", "Scale", "-", "ScreenShot", "Video", "-", "Quit"};
     private final String[] FILE_MENU = {"ScreenShot", "Video", "-", "Quit"};
     private final String[] VIEW_MENU = {"Orientation", "Scale", "UpsideDown"};
@@ -57,13 +60,16 @@ public class ApplicationFrame extends JFrame {
         return statusBar;
     }
 
+//    @Deprecated
     public ComboBoxModel getDeviceList() { return deviceListModel; }
+
+//    public DevicesPane getDevices() { return devices; }
 
     public void  initGUI() {
         setIconImage(GuiUtil.loadIcon("device").getImage());
         setTitle(getApplication().getName()+", Version "+getApplication().getVersion());
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowAdapter() {
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 Command.find(QuitCommand.class).execute();
@@ -74,8 +80,17 @@ public class ApplicationFrame extends JFrame {
         add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
         add( createDeviceControlPane() , BorderLayout.CENTER);
         add( statusBar = new StatusBar(application) , BorderLayout.SOUTH);
+
         pack();
+        setLocationByPlatform(true);
     }
+
+//    @Override
+//    public Dimension getMinimumSize() {
+//        Dimension dev = devices.getMinimumSize();
+//        Dimension frm = super.getMinimumSize();
+//        return new Dimension(Math.max(dev.width, frm.width), Math.max(dev.height, frm.height));
+//    }
 
     protected JMenuBar createMenubar() {
         JMenuBar     mb = new JMenuBar();
@@ -86,13 +101,14 @@ public class ApplicationFrame extends JFrame {
         return mb;
     }
 
+//    @Deprecated
     private JPanel createDeviceControlPane() {
         JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
         p.add(createDevicesList());
         return p;
     }
 
-    @Deprecated
+//    @Deprecated
     private JPanel createDevicesList() {
         JComboBox devices = new JComboBox(deviceListModel);
         devices.setPreferredSize(new Dimension(200, 20));
