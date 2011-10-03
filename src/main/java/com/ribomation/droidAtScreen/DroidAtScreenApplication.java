@@ -230,11 +230,12 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
 
     @Override
     public DeviceFrame getSelectedDevice() {
-        String  devName = (String) getAppFrame().getDeviceList().getSelectedItem();
+        String devName = (String) getAppFrame().getDeviceList().getSelectedItem();
+        if (devName == null) throw new RuntimeException("No device selected");
+
         DeviceFrame frame = devices.get(devName);
-        if (frame == null) {
-            throw new RuntimeException("No DeviceFrame with name=" + devName);
-        }
+        if (frame == null) throw new RuntimeException("No DeviceFrame with name=" + devName);
+        
         return frame;
     }
 
