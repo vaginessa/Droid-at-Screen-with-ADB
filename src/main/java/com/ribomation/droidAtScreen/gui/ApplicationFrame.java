@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2011, Ribomation AB (Jens Riboe).
+ * http://blog.ribomation.com/
+ *
+ * You free to use this software and the source code as you like.
+ * We do appreciate if you attribute were it came from.
+ */
+
 package com.ribomation.droidAtScreen.gui;
 
 import com.ribomation.droidAtScreen.Application;
@@ -92,7 +100,7 @@ public class ApplicationFrame extends JFrame {
             @Override
             public void disconnected(AndroidDevice dev) {
                 log.debug("[devicesBox] disconnected: dev=" + dev);
-                deviceListModel.removeElement( dev.getName() );
+                deviceListModel.removeElement(dev.getName());
             }
         });
 
