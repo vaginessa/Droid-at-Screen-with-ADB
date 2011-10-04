@@ -12,6 +12,7 @@ import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.FrameRateCommand;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.dev.RecordingListener;
 import com.ribomation.droidAtScreen.dev.ScreenImage;
 import com.ribomation.droidAtScreen.dev.ScreenshotTimer;
 import org.apache.log4j.Logger;
@@ -50,6 +51,7 @@ public class DeviceFrame extends JFrame {
     private ImageCanvas         canvas;
     private AffineTransform     scaleTX;
     private AffineTransform     upsideDownTX;
+    private RecordingListener   recordingListener;
 
         
     public DeviceFrame(Application app, AndroidDevice device, boolean landscape, boolean upsideDown, int scalePercentage, int frameRate) {
@@ -154,12 +156,21 @@ public class DeviceFrame extends JFrame {
     public void setLastScreenshot(ScreenImage image) {
         lastScreenshot = image;
         if (landscapeMode) lastScreenshot.rotate();
+
+        if (recordingListener != null) {
+            recordingListener.record(lastScreenshot);
+        }
+
         updateSize(lastScreenshot.getWidth(), lastScreenshot.getHeight());
         canvas.repaint();
     }
 
     public ScreenImage getLastScreenshot() {
         return lastScreenshot;
+    }
+
+    public void setRecordingListener(RecordingListener recordingListener) {
+        this.recordingListener = recordingListener;
     }
 
     public void setFrameRate(int frameRate) {
