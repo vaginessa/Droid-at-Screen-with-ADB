@@ -20,8 +20,7 @@ public class QuitCommand extends Command {
 
     @Override
     protected void doExecute(Application app) {
-        boolean askBeforeQuit = app.getPreferences().getBoolean("ask-before-quit", true);
-        if (!askBeforeQuit || askUser(app)) doQuit(app);
+        if (!app.getSettings().isAskBeforeQuit() || askUser(app)) doQuit(app);
     }
 
     private void    doQuit(Application app) {

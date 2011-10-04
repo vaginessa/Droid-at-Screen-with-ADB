@@ -32,16 +32,14 @@ public class ScreenShotCommand extends Command  {
     protected void doExecute(final Application app) {
         final DeviceFrame frame = app.getSelectedDevice();
         if (frame == null) return;
-//        final AndroidDevice dev = frame.getDevice();
 
-        final ImageFormatCommand    fmtCmd   = Command.find(ImageFormatCommand.class);
-        File suggestedFile = new File(String.format("droidAtScreen-%d.%s", count++, fmtCmd.getCurrentFormat().toLowerCase()));
+        File suggestedFile = new File(String.format("droidAtScreen-%d.%s", count++, app.getSettings().getImageFormat().toLowerCase()));
         
         final JFileChooser          chooser     = new JFileChooser(lastDir);        
         chooser.setCurrentDirectory(null);
         chooser.setSelectedFile(suggestedFile);
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", fmtCmd.getFormats()));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", app.getSettings().getImageFormats()));
 
         int rc = chooser.showSaveDialog(app.getAppFrame());
         if (rc == JFileChooser.APPROVE_OPTION) {
@@ -75,7 +73,7 @@ public class ScreenShotCommand extends Command  {
                     final int dot = name.lastIndexOf('.');
                     if (dot > 0) {
                         String ext = name.substring(dot + 1).toUpperCase();
-                        if (Arrays.asList(fmtCmd.getFormats()).contains(ext)) {
+                        if (Arrays.asList(app.getSettings().getImageFormats()).contains(ext)) {
                             return ext;
                         }
                     }

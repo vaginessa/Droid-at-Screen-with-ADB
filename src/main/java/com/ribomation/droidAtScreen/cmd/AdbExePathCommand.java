@@ -41,42 +41,45 @@ public class AdbExePathCommand extends Command {
     }
 
     private JPanel createPathPane() {
-        final JTextField      path = new JTextField( getPreferenceValue() );
-        JButton         open = new JButton("...");
+        final File adbExecutable = getApplication().getSettings().getAdbExecutable();
+        final JTextField pathField = new JTextField(adbExecutable != null ? adbExecutable.getAbsolutePath() : "");
+        final JButton         open = new JButton("...");
+
         open.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                createFileDialog(path);
+                createFileDialog(pathField, adbExecutable);
             }
         });
 
         JPanel  pathPane = new JPanel(new BorderLayout(5,0));
-        pathPane.add(path, BorderLayout.CENTER);
+        pathPane.add(pathField, BorderLayout.CENTER);
         pathPane.add(open, BorderLayout.EAST);
         return pathPane;
     }
 
-    private void createFileDialog(JTextField path) {
-        File f = null;
-        if (! isNotDefined()) {
-            f = new File(getPreferenceValue());
-        }
-        JFileChooser chooser = new JFileChooser(f != null ? f.getParentFile() : null);
-
+    private void createFileDialog(final JTextField txtField, File exe) {
+        JFileChooser chooser = new JFileChooser(exe != null ? exe.getParentFile() : null);
         int rc = chooser.showOpenDialog( getApplication().getAppFrame() );
+
         if (rc == JFileChooser.APPROVE_OPTION) {
             final File    file = chooser.getSelectedFile();
 
-            if (file.canRead() && file.canExecute()) {
-                path.setText( file.getAbsolutePath() );
-                
+            if (!file.equals(exe) && file.canRead() && file.canExecute()) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        setPreferenceValue( file.getAbsolutePath() );
-                        getApplication().setAdbExecutablePath(file);
+                        txtField.setText( file.getAbsolutePath() );
+                        getApplication().getSettings().setAdbExecutable(file);
+                        getApplication().getDeviceManager().setAdbExecutable(file);
+                        getApplication().getDeviceManager().createBridge();
                     }
                 });
+                if (exe != null && exe.exists()) {
+                    JOptionPane.showMessageDialog(getApplication().getAppFrame(),
+                            "The change of ADB path will take change the next time you start Droid@Screen",
+                            "", JOptionPane.WARNING_MESSAGE);
+                }
             } else {
                 JOptionPane.showMessageDialog(getApplication().getAppFrame(),
                         "Cannot read/execute the file: "+file.getAbsolutePath(),
@@ -99,33 +102,4 @@ public class AdbExePathCommand extends Command {
         return infoPane;
     }
 
-    protected String getPreferencesKey() {
-        return "adb-executable-path";
-    }
-
-    public void setPreferenceValue(String value) {
-        getApplication().getPreferences().put(getPreferencesKey(), value);
-        getApplication().savePreferences();
-    }
-
-    protected String getPreferenceValue() {
-        return getApplication().getPreferences().get(getPreferencesKey(), "");
-    }
-
-    public boolean isNotDefined() {
-        return isEmpty( getPreferenceValue() );
-    }
-
-    public boolean isDefined() {
-        return !isNotDefined();
-    }
-
-    public File getFile() {
-        if (isNotDefined()) return null;
-        return new File( getPreferenceValue() );
-    }
-
-    private boolean isEmpty(String s) {
-        return (s == null) || (s.trim().length() == 0);
-    }
 }

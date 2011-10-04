@@ -2,6 +2,7 @@ package com.ribomation.droidAtScreen;
 
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
+import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
@@ -35,13 +36,13 @@ public interface Application {
 //
 //    void removeDevice(AndroidDevice dev);
 
-    Preferences getPreferences();
+//    Preferences getPreferences();
 
     void setAutoShow(boolean show);
 
     void setSkipEmulator(boolean skip);
 
-    void setAdbExecutablePath(File file);
+//    void setAdbExecutablePath(File file);
 
 //    void setPortraitMode(boolean portrait);
     void setLandscapeMode(boolean portrait);
@@ -50,9 +51,9 @@ public interface Application {
 
     void setFrameRate(int rate);
 
-    void savePreferences();
+//    void savePreferences();
 
-    void destroyPreferences();
+//    void destroyPreferences();
 
 //    void showDevice(AndroidDevice dev);
 
@@ -62,4 +63,22 @@ public interface Application {
     DeviceFrame getSelectedDevice();
 
     Map<String, DeviceFrame> getDevices();
+
+
+    /**
+     * Invoked when a new device is detected.
+     * @param dev   the new device
+     */
+    void connected(AndroidDevice dev);
+
+    /**
+     * Invoked when a device goes offline.
+     * @param dev   the defunct device
+     */
+    void disconnected(AndroidDevice dev);
+
+    Settings getSettings();
+
+
+    AndroidDeviceManager getDeviceManager();
 }

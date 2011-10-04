@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,18 +49,10 @@ public abstract class Command extends AbstractAction implements AndroidDeviceLis
     }
 
     @Override
-    public void connected(AndroidDevice dev) {
-//        if (isEnabledOnlyWithDevice()) {
-//            setEnabled(true);
-//        }
-    }
+    public void connected(AndroidDevice dev) {}
 
     @Override
-    public void disconnected(AndroidDevice dev) {
-//        if (isEnabledOnlyWithDevice() && getApplication().getAppFrame().getDeviceList().getSize() == 0) {
-//            setEnabled(false);
-//        }
-    }
+    public void disconnected(AndroidDevice dev) {}
 
 
     protected abstract void doExecute(Application app);
@@ -84,6 +75,7 @@ public abstract class Command extends AbstractAction implements AndroidDeviceLis
         execute();
     }
 
+    @SuppressWarnings("unchecked")
     public static <CmdType extends Command> CmdType find(Class<? extends Command> cmdCls) {
         String name = extractName(cmdCls);
         return (CmdType) get(name);

@@ -18,18 +18,17 @@ public class UpsideDownCommand extends CheckBoxCommand  {
     }
 
     @Override
-    protected String getPreferencesKey() {
-        return "upside-down";
-    }
-
-    @Override
-    protected boolean getDefaultValue() {
-        return false;
-    }
-
-    @Override
     protected void notifyApplication(Application app, boolean upsideDown) {
         app.setUpsideDown(upsideDown);
     }
 
+    @Override
+    protected boolean getPreferenceValue() {
+        return getApplication().getSettings().isUpsideDown();
+    }
+
+    @Override
+    protected void setPreferenceValue(boolean value) {
+        getApplication().getSettings().setUpsideDown(value);
+    }
 }

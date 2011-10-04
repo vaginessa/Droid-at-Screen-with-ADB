@@ -14,10 +14,9 @@ import java.awt.event.ActionListener;
  * @date 30 september 2011, 14:19
  */
 public class ScaleCommand extends Command  {
-    private static Integer[]           scales = {25,50,75,100,125,150,175,200,250,300};
 
     public ScaleCommand() {
-        int scale = getPreferenceValue();
+        int scale = getApplication().getSettings().getScale();
         updateView(scale);
         setIcon("zoom");
         setTooltip("Sets the projection scale % of the Android Device. 100% is normal size");
@@ -40,23 +39,6 @@ public class ScaleCommand extends Command  {
         dialog.setVisible(true);
     }
 
-    protected String getPreferencesKey() {
-        return "projection-scale";
-    }
-
-    protected void setPreferenceValue(int value) {
-        getApplication().getPreferences().putInt(getPreferencesKey(), value);
-        getApplication().savePreferences();
-    }
-
-    protected int getPreferenceValue() {
-        return getApplication().getPreferences().getInt(getPreferencesKey(), 100);
-    }
-
-    public int getScale() {
-        return getPreferenceValue();
-    }
-
     private JPanel createScalePane(final JDialog dialog) {
         JPanel   p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.setBorder( BorderFactory.createTitledBorder("Projection Scale") );
@@ -66,14 +48,14 @@ public class ScaleCommand extends Command  {
             public void actionPerformed(ActionEvent e) {
                 int percentage = Integer.parseInt( e.getActionCommand() );
                 dialog.dispose();
-                setPreferenceValue(percentage);
+                getApplication().getSettings().setScale(percentage);
                 updateView(percentage);
                 getApplication().setScale(percentage);
             }
         };
 
         ButtonGroup     scale = new ButtonGroup();
-        for (int s : scales) {
+        for (int s : getApplication().getSettings().getScales()) {
             JRadioButton rb = createScaleRadioButton(s, action);
             scale.add(rb);
             p.add(rb);
@@ -86,7 +68,7 @@ public class ScaleCommand extends Command  {
         JRadioButton   r = new JRadioButton(percentage + "%");
         r.setActionCommand( Integer.toString(percentage) );
         r.addActionListener(action);
-        if (percentage == getPreferenceValue()) {
+        if (percentage == getApplication().getSettings().getScale()) {
             r.setSelected(true);
         }
         return r;

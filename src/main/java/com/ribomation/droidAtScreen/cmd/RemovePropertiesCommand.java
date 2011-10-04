@@ -26,7 +26,7 @@ public class RemovePropertiesCommand extends Command {
                 JOptionPane.YES_NO_OPTION
         );
         if (rc == JOptionPane.YES_OPTION) {
-            app.destroyPreferences();
+            app.getSettings().destroyPreferences();
         }
     }
 }
