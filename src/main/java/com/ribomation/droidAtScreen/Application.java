@@ -24,9 +24,9 @@ public interface Application {
 
 //    AndroidDevice       getSelectedDevice();
 
-    String getName();
-
-    String getVersion();
+//    String getName();
+//
+//    String getVersion();
 
     void addAndroidDeviceListener(AndroidDeviceListener listener);
 
@@ -81,4 +81,6 @@ public interface Application {
 
 
     AndroidDeviceManager getDeviceManager();
+
+    Info getInfo();
 }

@@ -24,7 +24,7 @@ public class StatusBar extends JPanel {
         message.setForeground(Color.DARK_GRAY);
         add(message);
         
-        message(app.getName() + ", V" + app.getVersion());
+        message(app.getInfo().getName() + ", V" + app.getInfo().getVersion());
     }
 
     public void message(String txt) {

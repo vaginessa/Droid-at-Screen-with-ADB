@@ -20,13 +20,10 @@ import java.awt.event.WindowEvent;
  */
 public class ApplicationFrame extends JFrame {
     private Logger                  log = Logger.getLogger(ApplicationFrame.class);
-    private Application             application;
-//    @Deprecated
+    private Application             app;
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
     private StatusBar               statusBar;
-//    private DevicesPane             devices;
 
-//    private final String[] TOOLBAR   = {"ImageFormat", "LookAndFeel", "AdbExePath", "About", "Quit"};
     private final String[] TOOLBAR   = {"Orientation", "Scale", "-", "ScreenShot", "Video", "-", "Quit"};
     private final String[] FILE_MENU = {"ScreenShot", "Video", "-", "Quit"};
     private final String[] VIEW_MENU = {"Orientation", "Scale", "UpsideDown"};
@@ -37,37 +34,17 @@ public class ApplicationFrame extends JFrame {
             "-", "AdbExePath", "-", "LookAndFeel", "-", "RemoveProperties"
     };
 
-    public ApplicationFrame() throws HeadlessException {
-        super();
+    
+    public ApplicationFrame(Application app) throws HeadlessException {
+        this.app = app;
     }
 
-    public ApplicationFrame(Application application) throws HeadlessException {
-        this.application = application;
-    }
-
-    public Application getApplication() {
-        if (application == null) {
-            throw new IllegalStateException("Missing application ref. Must invoke setApplication(...) before use.");
-        }
-        return application;
-    }
-
-    public void setApplication(Application application) {
-        this.application = application;
-    }
-
-    public StatusBar getStatusBar() {
-        return statusBar;
-    }
-
-//    @Deprecated
+    public StatusBar getStatusBar() { return statusBar; }
     public ComboBoxModel getDeviceList() { return deviceListModel; }
-
-//    public DevicesPane getDevices() { return devices; }
 
     public void  initGUI() {
         setIconImage(GuiUtil.loadIcon("device").getImage());
-        setTitle(getApplication().getName()+", Version "+getApplication().getVersion());
+        setTitle(app.getInfo().getName() + ", Version " + app.getInfo().getVersion());
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -79,18 +56,11 @@ public class ApplicationFrame extends JFrame {
         setJMenuBar( createMenubar() );
         add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
         add( createDeviceControlPane() , BorderLayout.CENTER);
-        add( statusBar = new StatusBar(application) , BorderLayout.SOUTH);
+        add( statusBar = new StatusBar(app) , BorderLayout.SOUTH);
 
         pack();
         setLocationByPlatform(true);
     }
-
-//    @Override
-//    public Dimension getMinimumSize() {
-//        Dimension dev = devices.getMinimumSize();
-//        Dimension frm = super.getMinimumSize();
-//        return new Dimension(Math.max(dev.width, frm.width), Math.max(dev.height, frm.height));
-//    }
 
     protected JMenuBar createMenubar() {
         JMenuBar     mb = new JMenuBar();
@@ -101,19 +71,17 @@ public class ApplicationFrame extends JFrame {
         return mb;
     }
 
-//    @Deprecated
     private JPanel createDeviceControlPane() {
         JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
         p.add(createDevicesList());
         return p;
     }
 
-//    @Deprecated
     private JPanel createDevicesList() {
         JComboBox devices = new JComboBox(deviceListModel);
         devices.setPreferredSize(new Dimension(200, 20));
 
-        getApplication().addAndroidDeviceListener(new AndroidDeviceListener() {
+        app.addAndroidDeviceListener(new AndroidDeviceListener() {
             @Override
             public void connected(AndroidDevice dev) {
                 log.debug("[devicesBox] connected: dev=" + dev);

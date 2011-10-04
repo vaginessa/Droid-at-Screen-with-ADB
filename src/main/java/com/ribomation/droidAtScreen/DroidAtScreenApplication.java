@@ -12,6 +12,8 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -24,14 +26,15 @@ import java.util.prefs.Preferences;
  */
 public class DroidAtScreenApplication implements Application, AndroidDeviceListener {
     private Logger                          log = Logger.getLogger(DroidAtScreenApplication.class);
-    private final String                    appPropertiesPath = "/META-INF/maven/com.ribomation/droidAtScreen/pom.properties";
-    private String                          appName = "Droid@Screen";
-    private String                          appVersion = "0.0";
+//    private final String                    appPropertiesPath = "/META-INF/maven/com.ribomation/droidAtScreen/pom.properties";
+//    private String                          appName = "Droid@Screen";
+//    private String                          appVersion = "0.0";
     private AndroidDeviceManager            deviceManager;
     private ApplicationFrame                appFrame;
     private Map<String, DeviceFrame>        devices = new HashMap<String, DeviceFrame>();
     private List<AndroidDeviceListener>     deviceListeners = new ArrayList<AndroidDeviceListener>();
     private Settings                        settings;
+    private Properties                      appProperties;
 
     public static void main(String[] args) {
         DroidAtScreenApplication    app = new DroidAtScreenApplication();
@@ -50,14 +53,13 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
 
     private void initProperties() {
         log.debug("initProperties");
-        InputStream is = this.getClass().getResourceAsStream(appPropertiesPath);
+        InputStream is = this.getClass().getResourceAsStream("/app.properties");
         if (is != null) {
             try {
-                Properties prp = new Properties();
-                prp.load(is);
-                appVersion = prp.getProperty("version", appVersion);
+                appProperties = new Properties();
+                appProperties.load(is);
             } catch (IOException e) {
-                log.debug("Missing classpath resource: "+appPropertiesPath, e);
+                log.debug("Missing classpath resource: /app.properties", e);
             }
         }
 
@@ -164,8 +166,6 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
         frame.dispose();
     }
 
-
-
     @Override
     public DeviceFrame getSelectedDevice() {
         String devName = (String) getAppFrame().getDeviceList().getSelectedItem();
@@ -186,8 +186,37 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     public AndroidDeviceManager getDeviceManager() {
         return deviceManager;
     }
-    
-    
+
+
+    public ApplicationFrame getAppFrame() {
+        return appFrame;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    @Override
+    public Info getInfo() {
+        return new Info() {
+            @Override
+            public String getName() {
+                return appProperties.getProperty("app.name", "no-name");
+            }
+
+            @Override
+            public String getVersion() {
+                return appProperties.getProperty("app.version", "0.0");
+            }
+
+            @Override
+            public Date getBuildDate() {
+                try {
+                    return new SimpleDateFormat("yyyy-MM-dd").parse(appProperties.getProperty("build.date", "2011-01-01"));
+                } catch (ParseException e) { return new Date(); }
+            }
+        };
+    }
     
     
 // --------------------------------------------
@@ -215,24 +244,6 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     // --------------------------------------------
     // Application
     // --------------------------------------------
-
-    public String getName() {
-        return appName;
-    }
-
-    public String getVersion() {
-        return appVersion;
-    }
-
-    public ApplicationFrame getAppFrame() {
-        return appFrame;
-    }
-
-    public Settings getSettings() {
-        return settings;
-    }
-
-
 
 
     @Override
@@ -289,31 +300,5 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
         }
     }
 
-
-
-
-//    public boolean isAutoShow() {
-//        return Command.<CheckBoxCommand>find(AutoShowCommand.class).isSelected();
-//    }
-//
-//    public boolean isSkipEmulator() {
-//        return Command.<CheckBoxCommand>find(SkipEmulatorCommand.class).isSelected();
-//    }
-//
-//    public boolean isPortrait() {
-//        return !Command.<CheckBoxCommand>find(OrientationCommand.class).isSelected();
-//    }
-//
-//    public boolean isUpsideDown() {
-//        return Command.<CheckBoxCommand>find(UpsideDownCommand.class).isSelected();
-//    }
-
-//    public int  getScale() {
-//        return Command.<ScaleCommand>find(ScaleCommand.class).getScale();
-//    }
-
-//    public int  getFrameRate() {
-//        return Command.<FrameRateCommand>find(FrameRateCommand.class).getRate();
-//    }
 
 }

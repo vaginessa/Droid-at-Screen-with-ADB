@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.Info;
 import com.ribomation.droidAtScreen.gui.GuiUtil;
 
 import javax.swing.*;
@@ -26,11 +27,12 @@ public class AboutCommand extends Command {
 
     @Override
     protected void doExecute(Application app) {
-        ImageIcon image = GuiUtil.loadPicture("jens-riboe");
-        String aboutText = loadResource("/about.html");
-        String linkText = loadResource("/about-links.html");
-        String systemText = loadResource("/about-system.html");
-        systemText = String.format(systemText, System.getProperty("os.name"),
+        ImageIcon   image = GuiUtil.loadPicture("jens-riboe");
+        Info info = app.getInfo();
+        String      aboutText = loadResource("/about.html");
+        String      linkText = loadResource("/about-links.html");
+        String      systemText = String.format(loadResource("/about-system.html"),
+                System.getProperty("os.name"),
                 System.getProperty("os.arch"),
                 System.getProperty("java.vm.name"),
                 System.getProperty("java.runtime.version"));
@@ -42,7 +44,7 @@ public class AboutCommand extends Command {
 
         JOptionPane.showMessageDialog(null,
                 content,
-                app.getName() + " - Version " + app.getVersion(),
+                info.getName() + " - Version " + info.getVersion(),
                 JOptionPane.PLAIN_MESSAGE);
     }
 
