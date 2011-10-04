@@ -20,6 +20,9 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -229,6 +232,27 @@ public abstract class Command extends AbstractAction implements AndroidDeviceLis
 
     private static boolean isBlank(String s) {
         return s == null || s.trim().length() == 0;
+    }
+
+    protected String loadResource(String path) {
+        InputStream is = this.getClass().getResourceAsStream(path);
+        if (is == null) {
+            throw new RuntimeException("Failed to load text resource: " + path);
+        }
+
+        try {
+            StringBuilder   buf = new StringBuilder(1000);
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while ((line = in.readLine()) != null) {
+                buf.append(line);
+            }
+            in.close();
+
+            return buf.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load text resource: " + path, e);
+        }
     }
 
     private static class DummyCommand extends Command {

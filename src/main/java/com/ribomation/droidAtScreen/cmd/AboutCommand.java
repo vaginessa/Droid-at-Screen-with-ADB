@@ -60,24 +60,4 @@ public class AboutCommand extends Command {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
-    String loadResource(String path) {
-        InputStream is = this.getClass().getResourceAsStream(path);
-        if (is == null) {
-            throw new RuntimeException("Failed to load text resource: " + path);
-        }
-
-        try {
-            StringBuilder   buf = new StringBuilder(1000);
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = in.readLine()) != null) {
-                buf.append(line);
-            }
-            in.close();
-
-            return buf.toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load text resource: " + path, e);
-        }
-    }
 }
