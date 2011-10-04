@@ -64,9 +64,18 @@ public class ScreenshotTimer extends TimerTask {
 
             if (errCount > MAX_ERRORS) {
                 stop();
-                if (e.getMessage().endsWith("device offline")) {
+
+                String msg = e.getMessage();
+                if (e.getCause() != null) {
+                    msg = e.getCause().getMessage();
+                }
+                if (msg == null || msg.trim().length() == 0) {
+                    msg = e.toString();
+                }
+                if (msg.endsWith("device offline")) {
                     app.getAppFrame().getStatusBar().message(device.getName() + " is offline");
                 }
+                
                 frame.setVisibleEnabled(false);
                 frame.dispose();
             }
