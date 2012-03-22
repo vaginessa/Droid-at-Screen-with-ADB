@@ -15,13 +15,11 @@ package com.ribomation.droidAtScreen.gui;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.FrameRateCommand;
-import com.ribomation.droidAtScreen.dev.AndroidDevice;
-import com.ribomation.droidAtScreen.dev.RecordingListener;
-import com.ribomation.droidAtScreen.dev.ScreenImage;
-import com.ribomation.droidAtScreen.dev.ScreenshotTimer;
+import com.ribomation.droidAtScreen.dev.*;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -50,9 +48,10 @@ public class DeviceFrame extends JFrame {
     private boolean             upsideDown = false;
     private boolean             visibleEnabled = false;
 
+    private ImageCanvas canvas;
+    private JToolBar    toolBar;
     private ScreenImage         lastScreenshot;
     private ScreenshotTimer     timer;
-    private ImageCanvas         canvas;
     private AffineTransform     scaleTX;
     private AffineTransform     upsideDownTX;
     private RecordingListener   recordingListener;
@@ -72,10 +71,10 @@ public class DeviceFrame extends JFrame {
         
         setResizable(false);
         setIconImage(GuiUtil.loadIcon("device").getImage());
-        canvas = new ImageCanvas();
 
         setTitle(device.getName());
-        add(canvas, BorderLayout.CENTER);
+        add(canvas = new ImageCanvas(), BorderLayout.CENTER);
+        add(toolBar = createToolBar(), BorderLayout.WEST);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -88,7 +87,24 @@ public class DeviceFrame extends JFrame {
             }
         });
     }
+    
+    protected JToolBar createToolBar() {
+        JToolBar    tb = new JToolBar("Commands", JToolBar.VERTICAL);
+        tb.setFloatable(false);
+        tb.setRollover(true);
+        tb.setMargin(new Insets(5,5,5,5));
+        tb.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+        
+        tb.add(new OrientationCommand(this).newButton());
+        tb.add(new ScaleCommand(this).newButton());
 
+        return tb;
+    }
+
+    
+    
+    
+    
     public AndroidDevice getDevice() { return device; }
 
     public String getName() { return device.getName(); }
@@ -114,10 +130,12 @@ public class DeviceFrame extends JFrame {
         setVisibleEnabled(false);
     }
 
-    private void updateSize(int width, int height) {
+    private void updateSize(int imgWidth, int imgHeight) {
         Insets      margins = getInsets();
-        Dimension   frameSize = new Dimension(margins.left + scale(width)  + margins.right,
-                margins.top  + scale(height) + margins.bottom);
+        Dimension tbSize = toolBar.getSize();
+        Dimension frameSize = new Dimension(
+                margins.left + tbSize.width + scale(imgWidth) + margins.right,
+                margins.top + scale(imgHeight) + margins.bottom);
         Dimension   currentSize = getSize();
 
         if (!currentSize.equals(frameSize)) {
@@ -158,6 +176,8 @@ public class DeviceFrame extends JFrame {
     }
 
     public void setLastScreenshot(ScreenImage image) {
+        if (image == null) return;
+        
         lastScreenshot = image;
         if (landscapeMode) lastScreenshot.rotate();
 
@@ -186,6 +206,10 @@ public class DeviceFrame extends JFrame {
         this.landscapeMode = landscape;
     }
 
+    public boolean isLandscapeMode() {
+        return landscapeMode;
+    }
+
     public void setScale(int scalePercentage) {
         this.scalePercentage = scalePercentage;
         if (scalePercentage == 100) {
@@ -194,6 +218,10 @@ public class DeviceFrame extends JFrame {
             double scale = scalePercentage / 100.0;
             scaleTX = AffineTransform.getScaleInstance(scale, scale);
         }
+    }
+
+    public int getScale() {
+        return scalePercentage;
     }
 
     public void setUpsideDown(boolean upsideDown) {

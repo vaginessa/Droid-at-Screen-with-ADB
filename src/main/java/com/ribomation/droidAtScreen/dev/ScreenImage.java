@@ -36,7 +36,7 @@ public class ScreenImage {
     public BufferedImage toBufferedImage() {
         final int       W = rawImage.width;
         final int       H = rawImage.height;
-        BufferedImage   image = new BufferedImage(W, H, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage   image = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         int             bytesPerPixels = rawImage.bpp >> 3; //bpp = bits / pixels --> bytes / pixels
 
         for (int y = 0, pixelIdx = 0; y < H; y++) {

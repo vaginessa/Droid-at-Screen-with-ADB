@@ -116,6 +116,32 @@ public class Settings {
         set("imageFormat", value);
     }
 
+    
+    public File getImageDirectory() {
+        String dir = applicationPreferences.get("imageDirectory", null);
+        if (dir != null) return new File(dir);
+        return new File(".");
+    }
+
+    public void setImageDirectory(File value) {
+        File oldDir = getImageDirectory();
+        applicationPreferences.put("imageDirectory", value.getAbsolutePath());
+        savePreferences();
+        propSupport.firePropertyChange("imageDirectory", oldDir, value);
+    }
+
+
+    public boolean isAskBeforeScreenshot() {
+        try {
+            return applicationPreferences.getBoolean("askBeforeScreenshot", true);
+        } catch (Exception e) { return false; }
+    }
+
+    public void setAskBeforeScreenshot(boolean value) {
+        set("askBeforeScreenshot", value);
+    }
+    
+    
     private static final Integer[]           scales = {25,50,75,100,125,150,175,200,250,300};
     public Integer[]    getScales() {
         return scales;
@@ -184,14 +210,14 @@ public class Settings {
 
 
     private void set(String name, String value) {
-        String old = applicationPreferences.get(name, "PNG");
+        String old = applicationPreferences.get(name, "");
         applicationPreferences.put(name, value);
         savePreferences();
         propSupport.firePropertyChange(name, old, value);
     }
 
     private void set(String name, int value) {
-        int old = applicationPreferences.getInt(name, 60);
+        int old = applicationPreferences.getInt(name, 0);
         applicationPreferences.putInt(name, value);
         savePreferences();
         propSupport.firePropertyChange(name, old, value);
@@ -204,5 +230,6 @@ public class Settings {
         propSupport.firePropertyChange(name, old, value);
     }
 
+    
 }
 

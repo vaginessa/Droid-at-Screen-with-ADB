@@ -38,9 +38,6 @@ import java.util.prefs.Preferences;
  */
 public class DroidAtScreenApplication implements Application, AndroidDeviceListener {
     private Logger                          log = Logger.getLogger(DroidAtScreenApplication.class);
-//    private final String                    appPropertiesPath = "/META-INF/maven/com.ribomation/droidAtScreen/pom.properties";
-//    private String                          appName = "Droid@Screen";
-//    private String                          appVersion = "0.0";
     private AndroidDeviceManager            deviceManager;
     private ApplicationFrame                appFrame;
     private Map<String, DeviceFrame>        devices = new HashMap<String, DeviceFrame>();
