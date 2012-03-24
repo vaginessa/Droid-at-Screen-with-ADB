@@ -17,6 +17,7 @@ import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.QuitCommand;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -36,12 +37,12 @@ public class ApplicationFrame extends JFrame {
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
     private StatusBar               statusBar;
 
-    private final String[] TOOLBAR      = {/*"Orientation",*/ /*"Scale", "-",*/ "ImageDirectory", /*"ScreenShot",*/ "Video", "-", "About"};
+    private final String[] TOOLBAR      = {/*"Orientation",*/ /*"Scale", "-",*/ "ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", /*"ScreenShot",*/ /*"Video",*/ "-", "About"};
     private final String[] FILE_MENU    = {"Quit"};
-    private final String[] IMAGE_MENU   = {"ImageDirectory", "ImageFormat", "AskBeforeScreenshot", "-", /*"ScreenShot",*/ "Video"};
+    private final String[] IMAGE_MENU   = {"ImageDirectory", "ImageFormat", "AskBeforeScreenshot", "-", /*"ScreenShot",*/ /*"Video"*/};
     private final String[] VIEW_MENU    = {/*"Orientation", "Scale",*/ "UpsideDown"};
     private final String[] ADB_MENU     = {"AdbRestart", "AdbReloadDevices", "AdbExePath"};
-    private final String[] OPTIONS_MENU = {"FrameRate", "-", "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties"};
+    private final String[] OPTIONS_MENU = {/*"FrameRate", "-",*/ "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties"};
     private final String[] HELP_MENU    = {"About"};
 
 
@@ -63,10 +64,10 @@ public class ApplicationFrame extends JFrame {
             }
         });
 
-        setJMenuBar( createMenubar() );
+        setJMenuBar(createMenubar());
         add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
-        add( createDeviceControlPane() , BorderLayout.CENTER);
-        add( statusBar = new StatusBar(app) , BorderLayout.SOUTH);
+        add(createDeviceControlPane(), BorderLayout.CENTER);
+        add(statusBar = new StatusBar(app), BorderLayout.SOUTH);
 
         pack();
         setLocationByPlatform(true);

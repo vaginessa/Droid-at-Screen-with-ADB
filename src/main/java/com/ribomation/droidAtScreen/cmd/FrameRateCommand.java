@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
  * @user jens
  * @date 2010-jan-18 10:35:20
  */
+@Deprecated
 public class FrameRateCommand extends Command {
 
 

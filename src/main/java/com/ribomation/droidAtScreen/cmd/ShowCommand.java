@@ -21,6 +21,7 @@ import com.ribomation.droidAtScreen.gui.DeviceFrame;
  * @user jens
  * @date 2010-jan-18 10:35:20
  */
+@Deprecated
 public class ShowCommand extends Command  {
     public ShowCommand() {
         setLabel("Show");
@@ -30,9 +31,9 @@ public class ShowCommand extends Command  {
 
     @Override
     protected void doExecute(Application app) {
-        DeviceFrame selectedDevice = app.getSelectedDevice();
-        if (selectedDevice == null) return;
-        
-        selectedDevice.setVisibleEnabled(true);
+//        DeviceFrame selectedDevice = app.getSelectedDevice();
+//        if (selectedDevice == null) return;
+//        
+//        selectedDevice.setVisibleEnabled(true);
     }
 }

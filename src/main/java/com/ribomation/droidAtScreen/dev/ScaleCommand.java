@@ -32,36 +32,31 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
     public ScaleCommand(DeviceFrame deviceFrame) {
         super(deviceFrame);
         setIcon("zoom");
-        
         updateButton(deviceFrame);
     }
 
     @Override
     protected void doExecute(Application app, final DeviceFrame deviceFrame) {
-        final JDialog       dialog = new JDialog(app.getAppFrame(), "Set the Device Frame Scale", true);
-
+        final JOptionPane pane = new JOptionPane();        
         ActionListener action = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
                 int percentage = Integer.parseInt( e.getActionCommand() );
                 deviceFrame.setScale(percentage);
                 updateButton(deviceFrame);
-                deviceFrame.validate();
             }
         };
-
-        JPanel scalePane = createScalePane(action);
-        dialog.setContentPane(new JOptionPane(scalePane, JOptionPane.QUESTION_MESSAGE));
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.pack();
-        dialog.setLocationByPlatform(true);
-        dialog.setVisible(true);
+        pane.setMessage(createScalePane(action));
+        pane.setMessageType(JOptionPane.INFORMATION_MESSAGE);
+        pane.setOptionType(JOptionPane.DEFAULT_OPTION);
+        
+        JDialog dlg = pane.createDialog(app.getAppFrame(), "Scale");
+        dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dlg.setVisible(true);
     }
 
     @Override
     protected void updateButton(DeviceFrame deviceFrame) {
-//        setLabel(String.format("Scale (%d%%)", deviceFrame.getScale()));
         setTooltip(String.format("Current scale (%d%%)", deviceFrame.getScale()));
     }
 
