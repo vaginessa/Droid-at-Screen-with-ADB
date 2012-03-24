@@ -25,6 +25,7 @@ import java.awt.event.ActionListener;
  * @user jens
  * @date 30 september 2011, 14:19
  */
+@Deprecated
 public class ScaleCommand extends Command  {
 
     public ScaleCommand() {

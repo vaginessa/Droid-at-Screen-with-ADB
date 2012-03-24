@@ -36,8 +36,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date 2010-jan-17 22:13:20
  */
 public class DeviceFrame extends JFrame {
-    private final RenderingHints    HINTS = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-//    private static AtomicInteger    frameCount = new AtomicInteger(1);
+    private final RenderingHints    HINTS = new RenderingHints(
+            RenderingHints.KEY_INTERPOLATION, 
+            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
     private final Logger              log;
     private Application         app;
@@ -49,7 +50,7 @@ public class DeviceFrame extends JFrame {
     private boolean             visibleEnabled = false;
 
     private ImageCanvas canvas;
-    private JToolBar    toolBar;
+    private JComponent toolBar;
     private ScreenImage         lastScreenshot;
     private ScreenshotTimer     timer;
     private AffineTransform     scaleTX;
@@ -64,15 +65,10 @@ public class DeviceFrame extends JFrame {
         log.debug(String.format("DeviceFrame(device=%s, landscape=%s, upsideDown=%s, scalePercentage=%d, frameRate=%d)",
                 device, landscape, upsideDown, scalePercentage, frameRate));
 
-        setLandscapeMode(landscape);
-        setScale(scalePercentage);
-        setFrameRate(frameRate);
-        setUpsideDown(upsideDown);
-        
-        setResizable(false);
-        setIconImage(GuiUtil.loadIcon("device").getImage());
-
         setTitle(device.getName());
+        setIconImage(GuiUtil.loadIcon("device").getImage());
+        setResizable(false);
+
         add(canvas = new ImageCanvas(), BorderLayout.CENTER);
         add(toolBar = createToolBar(), BorderLayout.WEST);
 
@@ -86,70 +82,32 @@ public class DeviceFrame extends JFrame {
                 setVisibleEnabled(false);
             }
         });
+
+        setLandscapeMode(landscape);
+        setScale(scalePercentage);
+        setUpsideDown(upsideDown);
+        setFrameRate(frameRate);
     }
     
-    protected JToolBar createToolBar() {
-        JToolBar    tb = new JToolBar("Commands", JToolBar.VERTICAL);
-        tb.setFloatable(false);
-        tb.setRollover(true);
-        tb.setMargin(new Insets(5,5,5,5));
-        tb.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        
-        tb.add(new OrientationCommand(this).newButton());
-        tb.add(new ScaleCommand(this).newButton());
+    protected JComponent createToolBar() {
+        JPanel buttons = new JPanel(new GridLayout(4, 1, 0, 8));
+        buttons.add(new OrientationCommand(this).newButton());
+        buttons.add(new ScaleCommand(this).newButton());
+        buttons.add(new UpsideDownCommand(this).newButton());
+        buttons.add(new ScreenshotCommand(this).newButton());
+
+        JPanel tb = new JPanel(new FlowLayout());
+        tb.setBorder(BorderFactory.createRaisedBevelBorder());
+        tb.add(buttons);
 
         return tb;
     }
 
-    
-    
-    
-    
-    public AndroidDevice getDevice() { return device; }
-
-    public String getName() { return device.getName(); }
-
-    public boolean isVisibleEnabled() { return visibleEnabled; }
-
-    public void setVisibleEnabled(boolean visibleEnabled) {
-        log.debug("setVisibleEnabled: " + visibleEnabled);
-        this.visibleEnabled = visibleEnabled;
-        
-        if (!isVisibleEnabled()) {
-            log.debug("setVisibleEnabled: HIDING");
-            super.setVisible(false);
-        } else if (!isVisible()) {
-            int rate = app.getSettings().getFrameRate();
-            setFrameRate(rate);
-        }
-    }
-
-    @Override
-    public void setVisible(boolean show) {
-        if (show) return; //we want to delay the frame until we have a proper size
-        setVisibleEnabled(false);
-    }
-
-    private void updateSize(int imgWidth, int imgHeight) {
-        Insets      margins = getInsets();
-        Dimension tbSize = toolBar.getSize();
-        Dimension frameSize = new Dimension(
-                margins.left + tbSize.width + scale(imgWidth) + margins.right,
-                margins.top + scale(imgHeight) + margins.bottom);
-        Dimension   currentSize = getSize();
-
-        if (!currentSize.equals(frameSize)) {
-            log.debug(String.format("updateSize: size=%s", frameSize));
-            setSize(frameSize);
-        }
-
-        if (!isVisible() && isVisibleEnabled()) {
-            setLocationByPlatform(true);
-            super.setVisible(true);
-        }
-    }
-
     class ImageCanvas extends JComponent {
+        ImageCanvas() {
+            setBorder(BorderFactory.createLoweredBevelBorder());
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             if (g instanceof Graphics2D) {
@@ -175,39 +133,70 @@ public class DeviceFrame extends JFrame {
         }
     }
 
-    public void setLastScreenshot(ScreenImage image) {
-        if (image == null) return;
-        
-        lastScreenshot = image;
-        if (landscapeMode) lastScreenshot.rotate();
+    public void updateView() {
+        try {
+            if (landscapeMode) lastScreenshot.rotate();
+            if (recordingListener != null) recordingListener.record(lastScreenshot);
+            updateSize(lastScreenshot.getWidth(), lastScreenshot.getHeight());
+            canvas.repaint();
+        } catch (Exception e) {
+            log.debug("Failed to update view. Probably no img from dev yet: " + e);
+        }
+    }
 
-        if (recordingListener != null) {
-            recordingListener.record(lastScreenshot);
+    private void updateSize(int imgWidth, int imgHeight) {
+        Insets      margins = getInsets();
+        Dimension tbSize = toolBar.getSize();
+        Dimension frameSize = new Dimension(
+                margins.left + tbSize.width + scale(imgWidth) + margins.right,
+                margins.top + scale(imgHeight) + margins.bottom);
+        Dimension   currentSize = getSize();
+
+        if (!currentSize.equals(frameSize)) {
+            log.debug(String.format("updateSize: size=%s", frameSize));
+            setSize(frameSize);
         }
 
-        updateSize(lastScreenshot.getWidth(), lastScreenshot.getHeight());
-        canvas.repaint();
+        if (!isVisible() && isVisibleEnabled()) {
+            setLocationByPlatform(true);
+            super.setVisible(true);
+        }
+    }
+
+    public boolean isVisibleEnabled() { return visibleEnabled; }
+
+    public void setVisibleEnabled(boolean visibleEnabled) {
+        log.debug("setVisibleEnabled: " + visibleEnabled);
+        this.visibleEnabled = visibleEnabled;
+        
+        if (!isVisibleEnabled()) {
+            log.debug("setVisibleEnabled: HIDING");
+            super.setVisible(false);
+        } else if (!isVisible()) {
+            int rate = app.getSettings().getFrameRate();
+            setFrameRate(rate);
+        }
+    }
+
+    @Override
+    public void setVisible(boolean show) {
+        if (show) return; //we want to delay the frame until we have a proper size
+        setVisibleEnabled(false);
+    }
+
+    public void setLastScreenshot(ScreenImage image) {
+        if (image == null) return;
+        lastScreenshot = image;
+        updateView();
     }
 
     public ScreenImage getLastScreenshot() {
         return lastScreenshot;
     }
 
-    public void setRecordingListener(RecordingListener recordingListener) {
-        this.recordingListener = recordingListener;
-    }
-
-    public void setFrameRate(int frameRate) {
-        if (timer != null) timer.stop();
-        timer = new ScreenshotTimer(device, this, app).start(frameRate);
-    }
-
     public void setLandscapeMode(boolean landscape) {
         this.landscapeMode = landscape;
-    }
-
-    public boolean isLandscapeMode() {
-        return landscapeMode;
+        updateView();
     }
 
     public void setScale(int scalePercentage) {
@@ -218,10 +207,7 @@ public class DeviceFrame extends JFrame {
             double scale = scalePercentage / 100.0;
             scaleTX = AffineTransform.getScaleInstance(scale, scale);
         }
-    }
-
-    public int getScale() {
-        return scalePercentage;
+        updateView();
     }
 
     public void setUpsideDown(boolean upsideDown) {
@@ -233,14 +219,39 @@ public class DeviceFrame extends JFrame {
         } else {
             upsideDownTX = null;
         }
+        updateView();
+    }
+
+    public void setFrameRate(int frameRate) {
+        if (timer != null) timer.stop();
+        timer = new ScreenshotTimer(device, this, app).start(frameRate);
+        updateView();
+    }
+
+    public AndroidDevice getDevice() { return device; }
+
+    public String getName() { return device.getName(); }
+
+    public void setRecordingListener(RecordingListener recordingListener) {
+        this.recordingListener = recordingListener;
+    }
+
+    public boolean isLandscapeMode() {
+        return landscapeMode;
+    }
+
+    public int getScale() {
+        return scalePercentage;
+    }
+
+    public boolean isUpsideDown() {
+        return upsideDown;
     }
 
     private int scale(int value) {
         if (scalePercentage == 100) return value;
         return (int) Math.round(value * scalePercentage / 100.0);
     }
-
-
 
     
 }

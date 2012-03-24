@@ -36,10 +36,10 @@ public class ApplicationFrame extends JFrame {
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
     private StatusBar               statusBar;
 
-    private final String[] TOOLBAR      = {/*"Orientation",*/ /*"Scale", "-",*/ "ImageDirectory", "ScreenShot", "Video", "-", "About"};
+    private final String[] TOOLBAR      = {/*"Orientation",*/ /*"Scale", "-",*/ "ImageDirectory", /*"ScreenShot",*/ "Video", "-", "About"};
     private final String[] FILE_MENU    = {"Quit"};
-    private final String[] IMAGE_MENU   = {"ImageDirectory", "ImageFormat", "AskBeforeScreenshot", "-", "ScreenShot", "Video"};
-    private final String[] VIEW_MENU    = {"Orientation", "Scale", "UpsideDown"};
+    private final String[] IMAGE_MENU   = {"ImageDirectory", "ImageFormat", "AskBeforeScreenshot", "-", /*"ScreenShot",*/ "Video"};
+    private final String[] VIEW_MENU    = {/*"Orientation", "Scale",*/ "UpsideDown"};
     private final String[] ADB_MENU     = {"AdbRestart", "AdbReloadDevices", "AdbExePath"};
     private final String[] OPTIONS_MENU = {"FrameRate", "-", "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties"};
     private final String[] HELP_MENU    = {"About"};

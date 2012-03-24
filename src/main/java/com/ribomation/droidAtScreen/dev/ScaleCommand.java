@@ -32,14 +32,12 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
     public ScaleCommand(DeviceFrame deviceFrame) {
         super(deviceFrame);
         setIcon("zoom");
-        setTooltip("Sets the projection scale % of the Android Device. 100% is normal size");
-        setMnemonic('Q');
-        updateLabel(deviceFrame);
+        
+        updateButton(deviceFrame);
     }
 
     @Override
-    protected void doExecute(Application app) {
-        final DeviceFrame   deviceFrame = getTarget();
+    protected void doExecute(Application app, final DeviceFrame deviceFrame) {
         final JDialog       dialog = new JDialog(app.getAppFrame(), "Set the Device Frame Scale", true);
 
         ActionListener action = new ActionListener() {
@@ -48,7 +46,7 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
                 dialog.dispose();
                 int percentage = Integer.parseInt( e.getActionCommand() );
                 deviceFrame.setScale(percentage);
-                updateLabel(deviceFrame);
+                updateButton(deviceFrame);
                 deviceFrame.validate();
             }
         };
@@ -61,17 +59,10 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
         dialog.setVisible(true);
     }
 
-    private void updateLabel(DeviceFrame deviceFrame) {
-        setLabel(String.format("Scale (%d%%)", deviceFrame.getScale()));
-    }
-
     @Override
-    public AbstractButton newButton() {
-        JToggleButton b = new JToggleButton(this);
-        b.setVerticalTextPosition(AbstractButton.BOTTOM);
-        b.setHorizontalTextPosition(AbstractButton.CENTER);
-        b.setSelected(true);
-        return b;
+    protected void updateButton(DeviceFrame deviceFrame) {
+//        setLabel(String.format("Scale (%d%%)", deviceFrame.getScale()));
+        setTooltip(String.format("Current scale (%d%%)", deviceFrame.getScale()));
     }
 
     private JPanel createScalePane(ActionListener action) {

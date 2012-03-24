@@ -20,6 +20,7 @@ import com.ribomation.droidAtScreen.Application;
  * @user jens
  * @date 2011-09-30 15:19
  */
+@Deprecated
 public class UpsideDownCommand extends CheckBoxCommand  {
 
     public UpsideDownCommand() {

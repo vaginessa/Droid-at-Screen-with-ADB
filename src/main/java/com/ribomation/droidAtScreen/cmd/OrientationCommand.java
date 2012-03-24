@@ -22,6 +22,7 @@ import javax.swing.*;
  * @user jens
  * @date 30 september 2011, 14:19
  */
+@Deprecated
 public class OrientationCommand extends CheckBoxCommand  {
 
     public OrientationCommand() {

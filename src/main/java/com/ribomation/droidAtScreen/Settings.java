@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -30,6 +31,7 @@ public class Settings {
     private final Preferences    applicationPreferences;
     private final Logger         log;
     private PropertyChangeSupport   propSupport;
+    private final AtomicInteger next = new AtomicInteger(1);
 
     public Settings() {
         applicationPreferences = Preferences.userNodeForPackage(Settings.class);
@@ -103,6 +105,10 @@ public class Settings {
         set("askBeforeQuit", value);
     }
 
+    public int nextInt() {
+        return next.getAndIncrement();
+    }
+    
     private static final String[] IMG_FMTS = {"PNG", "JPG"};
     public String[] getImageFormats() {
         return IMG_FMTS;

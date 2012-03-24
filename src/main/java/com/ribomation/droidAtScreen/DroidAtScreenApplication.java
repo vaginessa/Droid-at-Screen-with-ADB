@@ -140,6 +140,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     @Override
     public void connected(final AndroidDevice dev) {
         log.debug("connected: dev="+dev);
+        
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() { addDevice(dev); }

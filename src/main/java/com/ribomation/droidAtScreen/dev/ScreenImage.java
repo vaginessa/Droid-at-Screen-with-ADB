@@ -74,10 +74,6 @@ public class ScreenImage {
         return copy;
     }
 
-
-
-
-
     @Override
     public String toString() {
         return String.format("RawImage[%dx%d, %d bytes, bits/px=%d]",

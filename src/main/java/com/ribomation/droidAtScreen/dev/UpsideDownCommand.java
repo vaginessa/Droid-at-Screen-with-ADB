@@ -1,7 +1,7 @@
 /*
  * Project:  droidAtScreen
- * File:     OrientationCommand.java
- * Modified: 2012-03-22
+ * File:     UpsideDownCommand.java
+ * Modified: 2012-03-24
  *
  * Copyright (C) 2011, Ribomation AB (Jens Riboe).
  * http://blog.ribomation.com/
@@ -16,34 +16,29 @@ import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.CommandWithTarget;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
-import javax.swing.*;
-
 /**
  * Flips the device-frame 90 degrees.
  * <p/>
  * User: Jens
  * Created: 2012-03-22, 22:18
  */
-public class OrientationCommand extends CommandWithTarget<DeviceFrame> {
+public class UpsideDownCommand extends CommandWithTarget<DeviceFrame> {
 
-    public OrientationCommand(DeviceFrame deviceFrame) {
+    public UpsideDownCommand(DeviceFrame deviceFrame) {
         super(deviceFrame);
+        setIcon("upsidedown");
+        setTooltip("Flips the image upside-down. Useful for ZTE Blade devices.");
         updateButton(deviceFrame);
-        
     }
 
     @Override
     protected void doExecute(Application app, DeviceFrame deviceFrame) {
-        deviceFrame.setLandscapeMode(!deviceFrame.isLandscapeMode());
-        updateButton(deviceFrame);
+        deviceFrame.setUpsideDown(!deviceFrame.isUpsideDown());
         deviceFrame.validate();
     }
 
     protected void updateButton(DeviceFrame deviceFrame) {
-        String orientation = deviceFrame.isLandscapeMode() ? "Landscape" : "Portrait ";
-        setTooltip(String.format("Flip the orientation (%s)", orientation));
-        setIcon("orientation-" + orientation.toLowerCase().trim());
+        
     }
-
     
 }

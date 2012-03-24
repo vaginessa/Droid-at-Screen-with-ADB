@@ -30,6 +30,7 @@ import java.util.Arrays;
  * @user jens
  * @date 30 september 2011, 14:19
  */
+@Deprecated
 public class ScreenShotCommand extends Command {
     private int count = 1;
 
