@@ -42,6 +42,7 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
                         updateButton(deviceFrame);
                         deviceFrame.setScale(value);
                         deviceFrame.pack();
+                        deviceFrame.validate();
                     }
                 });
         dlg.setLocationRelativeTo(deviceFrame);

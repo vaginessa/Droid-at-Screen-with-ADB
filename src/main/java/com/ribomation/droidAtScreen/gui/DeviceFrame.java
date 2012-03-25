@@ -23,7 +23,9 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.util.*;
 import java.util.Timer;
@@ -50,6 +52,7 @@ public class DeviceFrame extends JFrame {
     private ImageCanvas canvas;
     private JComponent toolBar;
     private AffineTransform scaleTX;
+    private AffineTransform landscapeTX;
     private AffineTransform upsideDownTX;
     private RecordingListener recordingListener;
     private Timer timer;
@@ -136,7 +139,7 @@ public class DeviceFrame extends JFrame {
         void setSizeInfo(ImageCanvas img) {
             Dimension sz = img.getPreferredSize();
             size.setText(String.format("%dx%d (%s)",
-                    sz.width, sz.height, 
+                    sz.width, sz.height,
                     new Unit(img.getScreenshot().getRawImage().size).toString()));
         }
 
@@ -146,7 +149,7 @@ public class DeviceFrame extends JFrame {
 
         public void setElapsed(long time, ScreenImage img) {
             int sz = (img != null ? (int) (img.getRawImage().size / (time / 1000.0)) : 0);
-            elapsed.setText(String.format("%d ms (%s/s)", 
+            elapsed.setText(String.format("%d ms (%s/s)",
                     time, new Unit(sz).toString()));
         }
     }
@@ -188,18 +191,18 @@ public class DeviceFrame extends JFrame {
             long elapsed = System.currentTimeMillis() - start;
             infoPane.setElapsed(elapsed, image);
             infoPane.setStatus(device.getState().name().toUpperCase());
-            
+
             log.debug(String.format("Got screenshot %s, elapsed %d ms", image, elapsed));
             log.debug(device.getProperties());
 
             boolean fresh = canvas.getScreenshot() == null;
             if (image != null) {
-                if (landscapeMode) image.rotate();
+//                if (landscapeMode) image.rotate();
                 if (recordingListener != null) recordingListener.record(image);
                 canvas.setScreenshot(image);
                 infoPane.setSizeInfo(canvas);
             }
-            
+
             if (fresh) {
                 setTitle(device.getName());
                 pack();
@@ -227,23 +230,25 @@ public class DeviceFrame extends JFrame {
         protected void paintComponent(Graphics g) {
             if (image != null && g instanceof Graphics2D) {
                 Graphics2D g2 = (Graphics2D) g;
-                BufferedImageOp tx = null;
+                AffineTransform TX = new AffineTransform();
+                BufferedImage bufImg = image.toBufferedImage();
 
-                if (scaleTX != null) {
-                    tx = new AffineTransformOp(scaleTX, HINTS);
+                if (landscapeMode) {
+                    bufImg = toLandscape(bufImg);
+                }
+                if (scalePercentage != 100) {
+                    double scale = scalePercentage / 100.0;
+                    TX.concatenate(AffineTransform.getScaleInstance(scale, scale));
+                }
+                if (upsideDown) {
+                    int w = image.getWidth();
+                    int h = image.getHeight();
+                    double x = (landscapeMode ? h : w) / 2;
+                    double y = (landscapeMode ? w : h) / 2;
+                    TX.concatenate(AffineTransform.getQuadrantRotateInstance(2, x, y));
                 }
 
-                if (upsideDownTX != null) {
-                    if (tx == null) {
-                        tx = new AffineTransformOp(upsideDownTX, HINTS);
-                    } else {
-                        AffineTransform SCTX = (AffineTransform) scaleTX.clone();
-                        SCTX.concatenate(upsideDownTX);
-                        tx = new AffineTransformOp(SCTX, HINTS);
-                    }
-                }
-
-                g2.drawImage(image.toBufferedImage(), tx, 0, 0);
+                g2.drawImage(bufImg, TX, null);
             } else {
                 g.setColor(Color.RED);
                 g.setFont(getFont().deriveFont(16.0F));
@@ -251,9 +256,28 @@ public class DeviceFrame extends JFrame {
             }
         }
 
+        BufferedImage toLandscape(BufferedImage img) {
+            int q = 3;
+            int w = img.getWidth();
+            int h = img.getHeight();
+
+            Point topLeft = new Point((q == 2 || q == 3) ? w : 0, (q == 1 || q == 2) ? h : 0);
+            Point2D origo = AffineTransform.getQuadrantRotateInstance(q, 0, 0).transform(topLeft, null);
+            BufferedImage result = new BufferedImage(h, w, img.getType());
+            Graphics2D g = result.createGraphics();
+            g.translate(0 - origo.getX(), 0 - origo.getY());
+            g.transform(AffineTransform.getQuadrantRotateInstance(q, 0, 0));
+            g.drawRenderedImage(img, null);
+
+            return result;
+        }
+
         @Override
         public Dimension getPreferredSize() {
             if (image == null) return new Dimension(200, 300);
+            if (landscapeMode) {
+                return new Dimension(scale(image.getHeight()), scale(image.getWidth()));
+            }
             return new Dimension(scale(image.getWidth()), scale(image.getHeight()));
         }
 
@@ -265,28 +289,42 @@ public class DeviceFrame extends JFrame {
 
     public void setLandscapeMode(boolean landscape) {
         this.landscapeMode = landscape;
+//        if (landscape) {
+//            ScreenImage image = getLastScreenshot();
+//            if (image != null) {
+//                double w = image.getWidth();
+//                double h = image.getHeight();
+//                double x = w / 2;
+//                double y = h / 2;
+//                landscapeTX = AffineTransform.getQuadrantRotateInstance(-1, x, y);
+//            }
+//        } else {
+//            landscapeTX = null;
+//        }
     }
 
     public void setScale(int scalePercentage) {
         this.scalePercentage = scalePercentage;
-        if (scalePercentage == 100) {
-            scaleTX = null;
-        } else {
-            double scale = scalePercentage / 100.0;
-            scaleTX = AffineTransform.getScaleInstance(scale, scale);
-        }
+//        if (scalePercentage != 100) {
+//            double scale = scalePercentage / 100.0;
+//            scaleTX = AffineTransform.getScaleInstance(scale, scale);
+//        } else {
+//            scaleTX = null;
+//        }
     }
 
     public void setUpsideDown(boolean upsideDown) {
         this.upsideDown = upsideDown;
-        ScreenImage lastScreenshot = getLastScreenshot();
-        if (upsideDown && lastScreenshot != null) {
-            double x = lastScreenshot.getWidth() / 2;
-            double y = lastScreenshot.getHeight() / 2;
-            upsideDownTX = AffineTransform.getQuadrantRotateInstance(2, x, y);
-        } else {
-            upsideDownTX = null;
-        }
+//        ScreenImage lastScreenshot = getLastScreenshot();
+//        if (upsideDown) {
+//            if (lastScreenshot != null) {
+//                double x = lastScreenshot.getWidth() / 2;
+//                double y = lastScreenshot.getHeight() / 2;
+//                upsideDownTX = AffineTransform.getQuadrantRotateInstance(2, x, y);
+//            }
+//        } else {
+//            upsideDownTX = null;
+//        }
     }
 
     public void setRecordingListener(RecordingListener recordingListener) {

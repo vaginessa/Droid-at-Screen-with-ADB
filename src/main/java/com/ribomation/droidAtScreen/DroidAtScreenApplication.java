@@ -162,7 +162,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
         DeviceFrame frame = new DeviceFrame(this, dev);
         devices.put(frame.getName(), frame);
         fireDeviceConnected(dev);
-        frame.setLocationByPlatform(true);
+        frame.setLocationRelativeTo(getAppFrame());
         frame.setVisible(true);
     }
 
