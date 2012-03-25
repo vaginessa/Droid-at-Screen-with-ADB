@@ -33,72 +33,70 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
     /**
      * Models the device state
      */
-    enum ConnectionState {booting, offline, online}
+    public enum ConnectionState {
+        booting, offline, online, recovery, timeout, rejected, error
+    }
 
-
-    private static final double     SECS = 1000 * 1000 * 1000.0D;
-    private static final int        MAX_TIMINGS = 60;
-    private final Logger            log;
-    private final IDevice           target;
-    private final ArrayDeque<Long>  timings = new ArrayDeque<Long>(MAX_TIMINGS);
+    private final Logger log;
+    private final IDevice target;
+    private ConnectionState state = ConnectionState.offline;
 
     public AndroidDevice(IDevice target) {
         this.target = target;
         log = Logger.getLogger(AndroidDevice.class.getName() + ":" + target.getSerialNumber());
     }
 
-    public ScreenImage  getScreenImage() {
+    public ScreenImage getScreenImage() {
         try {
-            long        start    = System.nanoTime();
-            RawImage    rawImage = target.getScreenshot();
-            long        elapsed  = System.nanoTime() - start;
+            RawImage rawImage = target.getScreenshot();
             if (rawImage == null) return null;
-
-            timings.addLast(elapsed);
-            if (timings.size() > MAX_TIMINGS) timings.removeFirst();
-
-            ScreenImage image = new ScreenImage(rawImage);
-//            log.debug(String.format("Captured %s in %.4f secs", image, elapsed / SECS));
-
-            return image;
+            setState(target.getState());
+            return new ScreenImage(rawImage);
         } catch (IOException e) {
+            setState(ConnectionState.error);
             log.error("Failed to get screenshot: " + e);
             throw new RuntimeException("Failed to get screenshot", e);
         } catch (TimeoutException e) {
+            setState(ConnectionState.timeout);
             log.warn("Got timeout");
             return null;
         } catch (AdbCommandRejectedException e) {
+            setState(ConnectionState.rejected);
             log.error("ADB command rejected: OFFLINE=" + e.isDeviceOffline());
             throw new RuntimeException(e);
         }
     }
 
-    public long getAverageTimings() {
-        if (timings.isEmpty()) return 0;
-        
-        long sum = 0;
-        for (Long t : timings) sum += t;
-        return sum / timings.size();
+    public ConnectionState getState() {
+        return state;
     }
 
-//    public double getAverageTimingsInSeconds() {
-//        return getAverageTimings() / SECS;
-//    }
+    private void setState(ConnectionState s) {
+        state = s;
+    }
 
-    public ConnectionState getState() {
-        IDevice.DeviceState s = target.getState();
-        if (s == IDevice.DeviceState.ONLINE) return ConnectionState.online;
-        if (s == IDevice.DeviceState.BOOTLOADER) return ConnectionState.booting;
-        if (s == IDevice.DeviceState.OFFLINE) return ConnectionState.offline;
-        return ConnectionState.offline;
+    private void setState(IDevice.DeviceState s) {
+        switch (s) {
+            case BOOTLOADER:
+                setState(ConnectionState.booting);
+                break;
+            case OFFLINE:
+                setState(ConnectionState.offline);
+                break;
+            case ONLINE:
+                setState(ConnectionState.online);
+                break;
+            case RECOVERY:
+                setState(ConnectionState.recovery);
+                break;
+        }
     }
 
     public String getName() {
-        return target.getSerialNumber();
-    }
-
-    public String getAVDName() {
-        return target.getAvdName();
+        String name = isEmulator() 
+                ? target.getAvdName() 
+                : target.getProperty("ro.product.model");
+        return name != null ? name : target.getSerialNumber();
     }
 
     public Map<String, String> getProperties() {
@@ -122,7 +120,7 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
         if (!(obj instanceof AndroidDevice)) return false;
 
         AndroidDevice that = (AndroidDevice) obj;
-        return this.getName().equals( that.getName() );
+        return this.getName().equals(that.getName());
     }
 
     @Override
@@ -132,8 +130,7 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
 
     @Override
     public int compareTo(AndroidDevice that) {
-        return this.getName().compareTo( that.getName() );
+        return this.getName().compareTo(that.getName());
     }
-    
-    
+
 }

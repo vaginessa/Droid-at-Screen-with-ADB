@@ -37,13 +37,12 @@ public class ApplicationFrame extends JFrame {
     private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
     private StatusBar               statusBar;
 
-    private final String[] TOOLBAR      = {/*"Orientation",*/ /*"Scale", "-",*/ "ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", /*"ScreenShot",*/ /*"Video",*/ "-", "About"};
+    private final String[] TOOLBAR      = {"ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", "-", "About"};
     private final String[] FILE_MENU    = {"Quit"};
-    private final String[] IMAGE_MENU   = {"ImageDirectory", "ImageFormat", "AskBeforeScreenshot", "-", /*"ScreenShot",*/ /*"Video"*/};
-    private final String[] VIEW_MENU    = {/*"Orientation", "Scale",*/ "UpsideDown"};
+    private final String[] IMAGE_MENU   = {"ImageDirectory", "ImageFormat", "AskBeforeScreenshot"};
     private final String[] ADB_MENU     = {"AdbRestart", "AdbReloadDevices", "AdbExePath"};
-    private final String[] OPTIONS_MENU = {/*"FrameRate", "-",*/ "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties"};
-    private final String[] HELP_MENU    = {"About"};
+    private final String[] OPTIONS_MENU = {"AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties"};
+    private final String[] HELP_MENU    = {"Help", "About"};
 
 
     public ApplicationFrame(Application app) throws HeadlessException {
@@ -77,7 +76,7 @@ public class ApplicationFrame extends JFrame {
         JMenuBar     mb = new JMenuBar();
         mb.add(GuiUtil.createMenu("File"   , 'F', FILE_MENU));
         mb.add(GuiUtil.createMenu("Image"  , 'I', IMAGE_MENU));
-        mb.add(GuiUtil.createMenu("View"   , 'V', VIEW_MENU));
+//        mb.add(GuiUtil.createMenu("View"   , 'V', VIEW_MENU));
         mb.add(GuiUtil.createMenu("ADB"    , 'A', ADB_MENU));
         mb.add(GuiUtil.createMenu("Options", 'O', OPTIONS_MENU));
         mb.add(GuiUtil.createMenu("Help"   , 'H', HELP_MENU));

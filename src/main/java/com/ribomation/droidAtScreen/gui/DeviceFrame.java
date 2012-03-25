@@ -63,7 +63,7 @@ public class DeviceFrame extends JFrame {
 
         setTitle(device.getName());
         setIconImage(GuiUtil.loadIcon("device").getImage());
-        setResizable(true);
+        setResizable(false);
 
         add(canvas = new ImageCanvas(), BorderLayout.CENTER);
         add(toolBar = createToolBar(), BorderLayout.WEST);
@@ -86,7 +86,7 @@ public class DeviceFrame extends JFrame {
 
         retriever = new Retriever();
         timer = new Timer("Screenshot Timer");
-        timer.schedule(retriever, 0, 100);
+        timer.schedule(retriever, 0, 500);
         pack();
     }
 
@@ -104,38 +104,106 @@ public class DeviceFrame extends JFrame {
 
         return tb;
     }
-    
+
     public class InfoPane extends JPanel {
-        JLabel  size;
-        
+        JLabel size, status, elapsed;
+
         InfoPane() {
-            super(new FlowLayout(FlowLayout.CENTER));
-            size = new JLabel("No screenshot");
-            this.add(size);
+            super(new GridLayout(1, 2, 3, 0));
             setBorder(BorderFactory.createEmptyBorder());
+
+            Font font = getFont().deriveFont(Font.PLAIN, 12.0F);
+            status = new JLabel("UNKNOWN");
+            status.setFont(font);
+            status.setHorizontalAlignment(SwingConstants.LEADING);
+            status.setToolTipText("Device status");
+
+            size = new JLabel("? x ?");
+            size.setFont(font);
+            size.setHorizontalAlignment(SwingConstants.CENTER);
+            size.setToolTipText("Image dimension and size");
+
+            elapsed = new JLabel("");
+            elapsed.setFont(font);
+            elapsed.setHorizontalAlignment(SwingConstants.RIGHT);
+            elapsed.setToolTipText("Elapsed time and rate of last screenshot");
+
+            this.add(status);
+            this.add(size);
+            this.add(elapsed);
         }
 
         void setSizeInfo(ImageCanvas img) {
             Dimension sz = img.getPreferredSize();
-            size.setText(String.format("%d x %d", sz.width, sz.height));
+            size.setText(String.format("%dx%d (%s)",
+                    sz.width, sz.height, 
+                    new Unit(img.getScreenshot().getRawImage().size).toString()));
         }
 
-        public void setMessage(String msg) {
-            
+        public void setStatus(String devStatus) {
+            status.setText(devStatus);
+        }
+
+        public void setElapsed(long time, ScreenImage img) {
+            int sz = (img != null ? (int) (img.getRawImage().size / (time / 1000.0)) : 0);
+            elapsed.setText(String.format("%d ms (%s/s)", 
+                    time, new Unit(sz).toString()));
+        }
+    }
+
+    class Unit {
+        final int K = 1024;
+        final int M = K * K;
+        final int G = K * M;
+        long value;
+
+        Unit(long value) {
+            this.value = value;
+        }
+
+        String unit() {
+            if (value / G > 0) return "Gb";
+            if (value / M > 0) return "Mb";
+            if (value / K > 0) return "Kb";
+            return "bytes";
+        }
+
+        float value() {
+            if (value / G > 0) return (float) value / G;
+            if (value / M > 0) return (float) value / M;
+            if (value / K > 0) return (float) value / K;
+            return value;
+        }
+
+        public String toString() {
+            return String.format("%.1f %s", value(), unit());
         }
     }
 
     class Retriever extends TimerTask {
         @Override
         public void run() {
+            long start = System.currentTimeMillis();
             ScreenImage image = device.getScreenImage();
+            long elapsed = System.currentTimeMillis() - start;
+            infoPane.setElapsed(elapsed, image);
+            infoPane.setStatus(device.getState().name().toUpperCase());
+            
+            log.debug(String.format("Got screenshot, elapsed %d ms", elapsed));
+            log.debug(device.getProperties());
+
+            boolean fresh = canvas.getScreenshot() == null;
             if (image != null) {
                 if (landscapeMode) image.rotate();
                 if (recordingListener != null) recordingListener.record(image);
                 canvas.setScreenshot(image);
                 infoPane.setSizeInfo(canvas);
             }
-            pack();
+            
+            if (fresh) {
+                setTitle(device.getName());
+                pack();
+            }
         }
     }
 
@@ -148,6 +216,7 @@ public class DeviceFrame extends JFrame {
 
         public void setScreenshot(ScreenImage image) {
             this.image = image;
+            repaint();
         }
 
         public ScreenImage getScreenshot() {
