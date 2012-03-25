@@ -50,6 +50,7 @@ public class PreferredScaleCommand extends Command {
                         updateButton(value);
                     }
                 });
+        dlg.setLocationRelativeTo(app.getAppFrame());
         dlg.setVisible(true);
     }
 
@@ -77,7 +78,6 @@ public class PreferredScaleCommand extends Command {
         dlg.add(scaleSlider);
         dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dlg.setSize(scaleSlider.getSize().width, labels.size() * lblHt + 2 * vMarg);
-        dlg.setLocationByPlatform(true);
 
         scaleSlider.addChangeListener(new ChangeListener() {
             @Override

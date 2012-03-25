@@ -84,7 +84,7 @@ public class DeviceFrame extends JFrame {
             }
         });
 
-        setUpsideDown(cfg.isUpsideDown());
+//        setUpsideDown(cfg.isUpsideDown());
         timer = new Timer("Screenshot Timer");
         timer.schedule(retriever = new Retriever(), 0, 500);
         pack();

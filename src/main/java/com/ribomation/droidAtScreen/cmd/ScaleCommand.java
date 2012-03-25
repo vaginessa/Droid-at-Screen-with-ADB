@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
     public ScaleCommand(DeviceFrame deviceFrame) {
         super(deviceFrame);
-        setIcon("zoom");
+        setIcon("scale");
         updateButton(deviceFrame);
     }
 
@@ -44,6 +44,7 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
                         deviceFrame.pack();
                     }
                 });
+        dlg.setLocationRelativeTo(deviceFrame);
         dlg.setVisible(true);
     }
 
