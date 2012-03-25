@@ -10,7 +10,9 @@
  * We do appreciate if you attribute were it came from.
  */
 
-package com.ribomation.droidAtScreen.dev;
+package com.ribomation.droidAtScreen.gui;
+
+import com.ribomation.droidAtScreen.dev.ScreenImage;
 
 /**
  * DESCRIPTION

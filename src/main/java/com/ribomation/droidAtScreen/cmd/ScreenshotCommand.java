@@ -10,7 +10,7 @@
  * We do appreciate if you attribute were it came from.
  */
 
-package com.ribomation.droidAtScreen.dev;
+package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.Settings;

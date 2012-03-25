@@ -10,10 +10,11 @@
  * We do appreciate if you attribute were it came from.
  */
 
-package com.ribomation.droidAtScreen.dev;
+package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
-import com.ribomation.droidAtScreen.cmd.CommandWithTarget;
+import com.ribomation.droidAtScreen.gui.RecordingListener;
+import com.ribomation.droidAtScreen.dev.ScreenImage;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
 import com.ribomation.droidAtScreen.gui.StatusBar;
 

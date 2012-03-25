@@ -13,6 +13,7 @@
 package com.ribomation.droidAtScreen.gui;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.cmd.*;
 import com.ribomation.droidAtScreen.dev.*;
 import org.apache.log4j.Logger;
 
