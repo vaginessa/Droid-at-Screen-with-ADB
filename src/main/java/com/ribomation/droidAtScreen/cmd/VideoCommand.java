@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @user jens
  * @date 2010-jan-18 10:35:20
  */
+@Deprecated
 public class VideoCommand extends Command implements RecordingListener {
     private AtomicInteger               count = new AtomicInteger(1);
     private AtomicBoolean               capturing = new AtomicBoolean(false);

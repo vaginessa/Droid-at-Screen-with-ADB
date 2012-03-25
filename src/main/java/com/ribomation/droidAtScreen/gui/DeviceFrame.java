@@ -33,7 +33,6 @@ import java.util.Timer;
  * @date 2010-jan-17 22:13:20
  */
 public class DeviceFrame extends JFrame {
-
     private final static RenderingHints HINTS = new RenderingHints(
             RenderingHints.KEY_INTERPOLATION,
             RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -45,24 +44,20 @@ public class DeviceFrame extends JFrame {
     private int scalePercentage = 100;
     private boolean landscapeMode = false;
     private boolean upsideDown = false;
-    private boolean visibleEnabled = false;
 
     private ImageCanvas canvas;
     private JComponent toolBar;
-    //    private ScreenImage         lastScreenshot;
-//    private ScreenshotTimer     timer;
     private AffineTransform scaleTX;
     private AffineTransform upsideDownTX;
     private RecordingListener recordingListener;
     private Timer timer;
     private TimerTask retriever;
-    private InfoPane  info;
+    private InfoPane infoPane;
 
     public DeviceFrame(Application app, AndroidDevice device) {
         this.app = app;
         this.device = device;
         this.log = Logger.getLogger(DeviceFrame.class.getName() + ":" + device.getName());
-
         log.debug(String.format("DeviceFrame(device=%s)", device));
 
         setTitle(device.getName());
@@ -71,7 +66,7 @@ public class DeviceFrame extends JFrame {
 
         add(canvas = new ImageCanvas(), BorderLayout.CENTER);
         add(toolBar = createToolBar(), BorderLayout.WEST);
-        add(info = new InfoPane(), BorderLayout.SOUTH);
+        add(infoPane = new InfoPane(), BorderLayout.SOUTH);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -103,25 +98,29 @@ public class DeviceFrame extends JFrame {
         buttons.add(new RecordingCommand(this).newButton());
 
         JPanel tb = new JPanel(new FlowLayout());
-        tb.setBorder(BorderFactory.createRaisedBevelBorder());
+        tb.setBorder(BorderFactory.createEmptyBorder());
         tb.add(buttons);
 
         return tb;
     }
     
-    class InfoPane extends JPanel {
+    public class InfoPane extends JPanel {
         JLabel  size;
         
         InfoPane() {
             super(new FlowLayout(FlowLayout.CENTER));
             size = new JLabel("No screenshot");
             this.add(size);
-            setBorder(BorderFactory.createRaisedBevelBorder());
+            setBorder(BorderFactory.createEmptyBorder());
         }
 
         void setSizeInfo(ImageCanvas img) {
             Dimension sz = img.getPreferredSize();
             size.setText(String.format("%d x %d", sz.width, sz.height));
+        }
+
+        public void setMessage(String msg) {
+            
         }
     }
 
@@ -133,7 +132,7 @@ public class DeviceFrame extends JFrame {
                 if (landscapeMode) image.rotate();
                 if (recordingListener != null) recordingListener.record(image);
                 canvas.setScreenshot(image);
-                info.setSizeInfo(canvas);
+                infoPane.setSizeInfo(canvas);
             }
             pack();
         }
@@ -194,69 +193,6 @@ public class DeviceFrame extends JFrame {
         }
     }
 
-//    public void updateView() {
-//        try {
-//            if (landscapeMode) lastScreenshot.rotate();
-//            if (recordingListener != null) recordingListener.record(lastScreenshot);
-//            updateSize(lastScreenshot.getWidth(), lastScreenshot.getHeight());
-//            canvas.repaint();
-//        } catch (Exception e) {
-//            log.debug("Failed to update view. Probably no img from dev yet: " + e);
-//        }
-//    }
-
-//    private void updateSize(int imgWidth, int imgHeight) {
-//        Insets margins = getInsets();
-//        Dimension tbSize = toolBar.getSize();
-//        Dimension frameSize = new Dimension(
-//                margins.left + tbSize.width + scale(imgWidth) + margins.right,
-//                margins.top + scale(imgHeight) + margins.bottom);
-//        Dimension currentSize = getSize();
-//
-//        if (!currentSize.equals(frameSize)) {
-//            log.debug(String.format("updateSize: size=%s", frameSize));
-//            setSize(frameSize);
-//        }
-//
-//        if (!isVisible() && isVisibleEnabled()) {
-//            setLocationByPlatform(true);
-//            super.setVisible(true);
-//        }
-//    }
-
-//    public boolean isVisibleEnabled() {
-//        return visibleEnabled;
-//    }
-
-//    public void setVisibleEnabled(boolean visibleEnabled) {
-//        log.debug("setVisibleEnabled: " + visibleEnabled);
-//        this.visibleEnabled = visibleEnabled;
-//
-//        if (!isVisibleEnabled()) {
-//            log.debug("setVisibleEnabled: HIDING");
-//            super.setVisible(false);
-//        } else if (!isVisible()) {
-//            int rate = app.getSettings().getFrameRate();
-//            setFrameRate(rate);
-//        }
-//    }
-
-//    @Override
-//    public void setVisible(boolean show) {
-//        if (show) return; //we want to delay the frame until we have a proper size
-//        setVisibleEnabled(false);
-//    }
-//
-//    public void setLastScreenshot(ScreenImage image) {
-//        if (image == null) return;
-//        lastScreenshot = image;
-//        updateView();
-//    }
-
-    public ScreenImage getLastScreenshot() {
-        return canvas.getScreenshot();
-    }
-
     public void setLandscapeMode(boolean landscape) {
         this.landscapeMode = landscape;
         pack();
@@ -283,14 +219,20 @@ public class DeviceFrame extends JFrame {
         } else {
             upsideDownTX = null;
         }
-        invalidate();
+        pack();
     }
 
-//    public void setFrameRate(int frameRate) {
-//        if (timer != null) timer.stop();
-//        timer = new ScreenshotTimer(device, this, app).start(frameRate);
-//        updateView();
-//    }
+    public void setRecordingListener(RecordingListener recordingListener) {
+        this.recordingListener = recordingListener;
+    }
+
+    public ScreenImage getLastScreenshot() {
+        return canvas.getScreenshot();
+    }
+
+    public InfoPane getInfoPane() {
+        return infoPane;
+    }
 
     public AndroidDevice getDevice() {
         return device;
@@ -298,10 +240,6 @@ public class DeviceFrame extends JFrame {
 
     public String getName() {
         return device.getName();
-    }
-
-    public void setRecordingListener(RecordingListener recordingListener) {
-        this.recordingListener = recordingListener;
     }
 
     public boolean isLandscapeMode() {
@@ -320,6 +258,5 @@ public class DeviceFrame extends JFrame {
         if (scalePercentage == 100) return value;
         return (int) Math.round(value * scalePercentage / 100.0);
     }
-
 
 }
