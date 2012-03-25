@@ -15,6 +15,7 @@ package com.ribomation.droidAtScreen.cmd;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.Settings;
 import com.ribomation.droidAtScreen.cmd.CommandWithTarget;
+import com.ribomation.droidAtScreen.dev.ScreenImage;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
 import javax.imageio.ImageIO;
@@ -38,6 +39,8 @@ public class ScreenshotCommand extends CommandWithTarget<DeviceFrame> {
 
     @Override
     protected void doExecute(Application app, DeviceFrame device) {
+        ScreenImage image = device.getLastScreenshot().copy();
+        
         if (app.getSettings().isAskBeforeScreenshot()) {
             JFileChooser chooser = createChooser(
                     app.getSettings().getImageDirectory(),
@@ -46,29 +49,29 @@ public class ScreenshotCommand extends CommandWithTarget<DeviceFrame> {
             if (chooser.showSaveDialog(app.getAppFrame()) == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
                 if (!file.exists() || askOverwrite(app, file)) {
-                    SwingUtilities.invokeLater(new ImageSaver(app, file, device));
+                    SwingUtilities.invokeLater(new ImageSaver(app, file, image));
                 }
             }
         } else {
-            SwingUtilities.invokeLater(new ImageSaver(app, suggestFilename(app), device));
+            SwingUtilities.invokeLater(new ImageSaver(app, suggestFilename(app), image));
         }
     }
 
     private class ImageSaver implements Runnable {
         private Application app;
         private File file;
-        private DeviceFrame device;
+        private ScreenImage image;
 
-        private ImageSaver(Application app, File file, DeviceFrame device) {
+        private ImageSaver(Application app, File file, ScreenImage image) {
             this.app = app;
             this.file = file;
-            this.device = device;
+            this.image = image;
         }
 
         @Override
         public void run() {
             try {
-                ImageIO.write(device.getLastScreenshot().toBufferedImage(),
+                ImageIO.write(image.toBufferedImage(),
                         extractFormat(app, file), file);
                 app.getAppFrame().getStatusBar().message("Written %s", file.getName());
                 getLog().info(String.format("Screenshot file: %s", file.getAbsolutePath()));

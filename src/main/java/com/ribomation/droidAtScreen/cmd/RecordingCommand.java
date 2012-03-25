@@ -88,7 +88,7 @@ public class RecordingCommand extends CommandWithTarget<DeviceFrame> implements 
     @Override
     public void record(ScreenImage image) {
         try {
-            images.put(image);
+            images.put(image.copy());
         } catch (InterruptedException ignore) { }
     }
 

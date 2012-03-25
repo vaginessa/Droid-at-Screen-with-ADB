@@ -39,9 +39,9 @@ public class ScreenImage {
         BufferedImage   image = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         int             bytesPerPixels = rawImage.bpp >> 3; //bpp = bits / pixels --> bytes / pixels
 
-        for (int y = 0, pixelIdx = 0; y < H; y++) {
-            for (int x = 0; x < W; x++, pixelIdx += bytesPerPixels) {
-                image.setRGB(x, y, rawImage.getARGB(pixelIdx));
+        for (int y = 0, pxIdx = 0; y < H; y++) {
+            for (int x = 0; x < W; x++, pxIdx += bytesPerPixels) {
+                image.setRGB(x, y, rawImage.getARGB(pxIdx));
             }
         }
 
