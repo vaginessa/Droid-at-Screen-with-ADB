@@ -65,7 +65,6 @@ public class DeviceFrame extends JFrame {
         Settings cfg = app.getSettings();
         setScale(cfg.getPreferredScale());
         setLandscapeMode(cfg.isLandscape());
-        setUpsideDown(cfg.isUpsideDown());
 
         setTitle(device.getName());
         setIconImage(GuiUtil.loadIcon("device").getImage());
@@ -85,6 +84,7 @@ public class DeviceFrame extends JFrame {
             }
         });
 
+        setUpsideDown(cfg.isUpsideDown());
         timer = new Timer("Screenshot Timer");
         timer.schedule(retriever = new Retriever(), 0, 500);
         pack();
