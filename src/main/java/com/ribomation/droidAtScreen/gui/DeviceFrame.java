@@ -36,7 +36,7 @@ import java.util.Timer;
  * @user jens
  * @date 2010-jan-17 22:13:20
  */
-public class DeviceFrame extends JFrame {
+public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
     private final static RenderingHints HINTS = new RenderingHints(
             RenderingHints.KEY_INTERPOLATION,
             RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -51,9 +51,9 @@ public class DeviceFrame extends JFrame {
 
     private ImageCanvas canvas;
     private JComponent toolBar;
-    private AffineTransform scaleTX;
-    private AffineTransform landscapeTX;
-    private AffineTransform upsideDownTX;
+//    private AffineTransform scaleTX;
+//    private AffineTransform landscapeTX;
+//    private AffineTransform upsideDownTX;
     private RecordingListener recordingListener;
     private Timer timer;
     private TimerTask retriever;
@@ -364,4 +364,23 @@ public class DeviceFrame extends JFrame {
         return (int) Math.round(value * scalePercentage / 100.0);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DeviceFrame that = (DeviceFrame) o;
+        return this.device.getName().equals(that.device.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return device.getName().hashCode();
+    }
+
+    @Override
+    public int compareTo(DeviceFrame that) {
+        return this.getName().compareTo(that.getName());
+    }
+    
 }

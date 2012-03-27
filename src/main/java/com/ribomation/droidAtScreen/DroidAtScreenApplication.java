@@ -18,6 +18,7 @@ import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
+import com.ribomation.droidAtScreen.gui.DeviceTableModel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -40,10 +41,11 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     private Logger                          log = Logger.getLogger(DroidAtScreenApplication.class);
     private AndroidDeviceManager            deviceManager;
     private ApplicationFrame                appFrame;
-    private Map<String, DeviceFrame>        devices = new HashMap<String, DeviceFrame>();
     private List<AndroidDeviceListener>     deviceListeners = new ArrayList<AndroidDeviceListener>();
     private Settings                        settings;
     private Properties                      appProperties;
+    private Map<String, DeviceFrame>        devices = new HashMap<String, DeviceFrame>();
+    private DeviceTableModel                deviceTableModel = new DeviceTableModel();
 
     public static void main(String[] args) {
         DroidAtScreenApplication    app = new DroidAtScreenApplication();
@@ -134,58 +136,9 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
     
 
     // --------------------------------------------
-    // AndroidDeviceManager
+    // App getters
     // --------------------------------------------
-
-    @Override
-    public void connected(final AndroidDevice dev) {
-        log.debug("connected: dev="+dev);
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { addDevice(dev); }
-        });
-    }
-
-    @Override
-    public void disconnected(final AndroidDevice dev) {
-        log.debug("disconnected: dev="+dev);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { removeDevice(dev); }
-        });
-    }
-
-    public void addDevice(AndroidDevice dev) {
-        getAppFrame().getStatusBar().message("Connected to " + dev.getName());
-
-        DeviceFrame frame = new DeviceFrame(this, dev);
-        devices.put(frame.getName(), frame);
-        fireDeviceConnected(dev);
-        frame.setLocationRelativeTo(getAppFrame());
-        frame.setVisible(true);
-    }
-
-    public void removeDevice(AndroidDevice dev) {
-        getAppFrame().getStatusBar().message("Disconnected from " + dev.getName());
-        fireDeviceDisconnected(dev);
-        DeviceFrame frame = devices.remove(dev.getName());
-        if (frame == null) return;
-        frame.setVisible(false);
-        frame.dispose();
-    }
-
-    @Override
-    public DeviceFrame getSelectedDevice() {
-        String devName = (String) getAppFrame().getDeviceList().getSelectedItem();
-        if (devName == null) return null;
-
-        DeviceFrame frame = devices.get(devName);
-        if (frame == null) return null;
-        
-        return frame;
-    }
-
+    
     @Override
     public Map<String, DeviceFrame> getDevices() {
         return devices;
@@ -226,11 +179,57 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
             }
         };
     }
-    
-    
-// --------------------------------------------
-    // AndroidDeviceListener
+
+
+    @Override
+    public DeviceTableModel getDeviceTableModel() {
+        return deviceTableModel;
+    }
+
     // --------------------------------------------
+    // AndroidDeviceManager
+    // --------------------------------------------
+
+    @Override
+    public void connected(final AndroidDevice dev) {
+        log.debug("connected: dev="+dev);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                getAppFrame().getStatusBar().message("Connected to " + dev.getName());
+
+                DeviceFrame frame = new DeviceFrame(DroidAtScreenApplication.this, dev);
+                devices.put(frame.getName(), frame);
+                deviceTableModel.add(frame);
+                fireDeviceConnected(dev);
+                
+                frame.setLocationRelativeTo(getAppFrame());
+                frame.setVisible(true);
+            }
+        });
+    }
+
+    @Override
+    public void disconnected(final AndroidDevice dev) {
+        log.debug("disconnected: dev="+dev);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                getAppFrame().getStatusBar().message("Disconnected from " + dev.getName());
+
+                DeviceFrame frame = devices.remove(dev.getName());
+                deviceTableModel.remove(frame);
+                fireDeviceDisconnected(dev);
+                
+                if (frame == null) return;
+                frame.setVisible(false);
+                frame.dispose();
+            }
+        });
+    }
+
 
     @Override
     public void addAndroidDeviceListener(AndroidDeviceListener listener) {
@@ -248,69 +247,5 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
             listener.disconnected(dev);
         }
     }
-
-
-    // --------------------------------------------
-    // Application
-    // --------------------------------------------
-
-
-    @Override
-    public void setSkipEmulator(boolean value) {
-        log.debug("setSkipEmulator: " + value);
-    }
-
-    @Override
-    public void setAutoShow(boolean value) {
-        log.debug("setAutoShow: " + value);
-    }
-
-    @Override
-    @Deprecated
-    public void setLandscapeMode(boolean value) {
-        log.debug("setLandscapeMode: " + value);
-//        DeviceFrame selectedDevice = getSelectedDevice();
-//        if (selectedDevice != null) {
-//            selectedDevice.setLandscapeMode(value);
-//        } else {
-//            getAppFrame().getStatusBar().message("No device");
-//        }
-    }
-
-    @Override
-    public void setUpsideDown(boolean value) {
-        log.debug("setUpsideDown: " + value);
-        DeviceFrame selectedDevice = getSelectedDevice();
-        if (selectedDevice != null) {
-            selectedDevice.setUpsideDown(value);
-        } else {
-            getAppFrame().getStatusBar().message("No device");
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void setFrameRate(int value) {
-        log.debug("setFrameRate: " + value);
-//        DeviceFrame selectedDevice = getSelectedDevice();
-//        if (selectedDevice != null) {
-//            selectedDevice.setFrameRate(value);
-//        } else {
-//            getAppFrame().getStatusBar().message("No device");
-//        }
-    }
-
-    @Override
-    @Deprecated
-    public void setScale(int value) {
-        log.debug("setScale: " + value);
-//        DeviceFrame selectedDevice = getSelectedDevice();
-//        if (selectedDevice != null) {
-//            selectedDevice.setScale(value);
-//        } else {
-//            getAppFrame().getStatusBar().message("No device");
-//        }
-    }
-
 
 }

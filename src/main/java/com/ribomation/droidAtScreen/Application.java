@@ -17,8 +17,10 @@ import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
+import com.ribomation.droidAtScreen.gui.DeviceTableModel;
 
 import javax.swing.*;
+import javax.swing.table.TableModel;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
@@ -34,48 +36,15 @@ public interface Application {
 
     ApplicationFrame getAppFrame();
 
-//    AndroidDevice       getSelectedDevice();
+    Settings getSettings();
 
-//    String getName();
-//
-//    String getVersion();
+    Info getInfo();
+
+    AndroidDeviceManager getDeviceManager();
 
     void addAndroidDeviceListener(AndroidDeviceListener listener);
 
-    void setScale(int percentage);
-
-//    void addDevice(AndroidDevice dev);
-//
-//    void removeDevice(AndroidDevice dev);
-
-//    Preferences getPreferences();
-
-    void setAutoShow(boolean show);
-
-    void setSkipEmulator(boolean skip);
-
-//    void setAdbExecutablePath(File file);
-
-//    void setPortraitMode(boolean portrait);
-    void setLandscapeMode(boolean portrait);
-
-    void setUpsideDown(boolean upsideDown);
-
-    void setFrameRate(int rate);
-
-//    void savePreferences();
-
-//    void destroyPreferences();
-
-//    void showDevice(AndroidDevice dev);
-
-//    void hideDevice(DeviceFrame dev);
-//    void hideDevice(DeviceFrame dev, boolean doDispose);
-
-    DeviceFrame getSelectedDevice();
-
     Map<String, DeviceFrame> getDevices();
-
 
     /**
      * Invoked when a new device is detected.
@@ -89,10 +58,5 @@ public interface Application {
      */
     void disconnected(AndroidDevice dev);
 
-    Settings getSettings();
-
-
-    AndroidDeviceManager getDeviceManager();
-
-    Info getInfo();
+    DeviceTableModel getDeviceTableModel();
 }

@@ -34,10 +34,9 @@ public class AndroidDeviceManager
   implements AndroidDebugBridge.IDeviceChangeListener,
              AndroidDebugBridge.IDebugBridgeChangeListener
 {
-    private Logger                          log = Logger.getLogger(this.getClass());
-    private Map<String, AndroidDevice>      devices = new HashMap<String, AndroidDevice>();
-    private File                            adbExecutable;
-    private Application                     app;
+    private Logger          log = Logger.getLogger(this.getClass());
+    private File            adbExecutable;
+    private Application     app;
 
 
     public AndroidDeviceManager(Application app) {
@@ -50,7 +49,20 @@ public class AndroidDeviceManager
         AndroidDebugBridge.addDebugBridgeChangeListener(this);
         AndroidDebugBridge.addDeviceChangeListener(this);
     }
-
+    
+    /**
+     * Invoked during JVM shutdown, to close the bridge.
+     */
+    @Override
+    public void run() {
+        try {
+            AndroidDebugBridge.disconnectBridge();
+            AndroidDebugBridge.terminate();
+        } catch (Exception e) {
+            System.err.println("Failed to shutdown Android Device Bridge " + e);
+        }
+    }
+    
     public void setAdbExecutable(File adbExecutable) {
         if (!adbExecutable.isFile()) {
             throw new RuntimeException("ADB executable '" + adbExecutable + "' is not a file");
@@ -78,24 +90,35 @@ public class AndroidDeviceManager
             throw new RuntimeException("Failed to created the absolute path to the ADB executable: " + getAdbExecutable());
         }
     }
+    
+    /**
+     * Invoked by ADB, when a new device is attached.
+     * @param dev    the device
+     */
+    @Override
+    public void deviceConnected(IDevice dev) {
+        log.info("Device connected: " + dev);
+        app.connected(new AndroidDevice(dev));
+    }
 
-    public boolean restartADB() {
-        return AndroidDebugBridge.getBridge().restart();
+    /**
+     * Invoked by ADB when a device has detached.
+     * @param dev    the device
+     */
+    @Override
+    public void deviceDisconnected(IDevice dev) {
+        log.info("Device disconnected: " + dev);
+        app.disconnected(new AndroidDevice(dev));
+    }
+
+    public void reloadDevices() {
+        for (IDevice dev : AndroidDebugBridge.getBridge().getDevices()) {
+            deviceConnected(dev);
+        }
     }
     
-    public void reloadDevices() {
-        synchronized (devices) {
-            for (AndroidDevice dev : devices.values()) {
-                app.disconnected(dev);
-            }
-            devices.clear();
-
-            IDevice[] devs = AndroidDebugBridge.getBridge().getDevices();
-            for (IDevice dev : devs) {
-                devices.put(dev.getSerialNumber(), new AndroidDevice(dev));
-                app.connected(new AndroidDevice(dev));
-            }
-        }
+    public boolean restartADB() {
+        return AndroidDebugBridge.getBridge().restart();
     }
 
     public boolean isConnectedToADB() {
@@ -105,34 +128,7 @@ public class AndroidDeviceManager
     public InetSocketAddress getSocketAddress() {
         return AndroidDebugBridge.getSocketAddress();
     }
-
-    /**
-     * Invoked by ADB, when a new device is attached.
-     * @param target    the device
-     */
-    @Override
-    public void deviceConnected(IDevice target) {
-        log.info("Device connected: " + target);
-        synchronized (devices) {
-            AndroidDevice  dev = new AndroidDevice(target);
-            devices.put(target.getSerialNumber(), dev);
-            app.connected(dev);
-        }
-    }
-
-    /**
-     * Invoked by ADB when a device has detached.
-     * @param target    the device
-     */
-    @Override
-    public void deviceDisconnected(IDevice target) {
-        log.info("Device disconnected: " + target);
-        synchronized (devices) {
-            AndroidDevice dev = devices.remove(target.getSerialNumber());
-            if (dev != null) app.disconnected(dev);
-        }
-    }
-
+   
     @Override
     public void deviceChanged(IDevice dev, int changeMask) {
         log.debug("Device changed: " + dev + ", mask=" + toMaskString(changeMask));
@@ -155,20 +151,6 @@ public class AndroidDeviceManager
             result.append("CHANGE_STATE ");
         }
         return result.toString();
-    }
-
-
-    /**
-     * Invoked during JVM shutdown, to close the bridge.
-     */
-    @Override
-    public void run() {
-        try {
-            AndroidDebugBridge.disconnectBridge();
-            AndroidDebugBridge.terminate();
-        } catch (Exception e) {
-            System.err.println("Failed to shutdown Android Device Bridge " + e);
-        }
     }
   
 }

@@ -21,6 +21,8 @@ import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -34,7 +36,7 @@ import java.awt.event.WindowEvent;
 public class ApplicationFrame extends JFrame {
     private Logger                  log = Logger.getLogger(ApplicationFrame.class);
     private Application             app;
-    private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
+//    private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
     private StatusBar               statusBar;
 
     private final String[] TOOLBAR      = {"ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", "-", "About"};
@@ -50,7 +52,8 @@ public class ApplicationFrame extends JFrame {
     }
 
     public StatusBar getStatusBar() { return statusBar; }
-    public ComboBoxModel getDeviceList() { return deviceListModel; }
+    
+//    public ComboBoxModel getDeviceList() { return deviceListModel; }
 
     public void  initGUI() {
         setIconImage(GuiUtil.loadIcon("device").getImage());
@@ -65,7 +68,7 @@ public class ApplicationFrame extends JFrame {
 
         setJMenuBar(createMenubar());
         add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
-        add(createDeviceControlPane(), BorderLayout.CENTER);
+        add(createDevicesTable(), BorderLayout.CENTER);
         add(statusBar = new StatusBar(app), BorderLayout.SOUTH);
 
         pack();
@@ -76,44 +79,59 @@ public class ApplicationFrame extends JFrame {
         JMenuBar     mb = new JMenuBar();
         mb.add(GuiUtil.createMenu("File"   , 'F', FILE_MENU));
         mb.add(GuiUtil.createMenu("Image"  , 'I', IMAGE_MENU));
-//        mb.add(GuiUtil.createMenu("View"   , 'V', VIEW_MENU));
         mb.add(GuiUtil.createMenu("ADB"    , 'A', ADB_MENU));
         mb.add(GuiUtil.createMenu("Options", 'O', OPTIONS_MENU));
         mb.add(GuiUtil.createMenu("Help"   , 'H', HELP_MENU));
         return mb;
     }
+    
+    
+    private JComponent createDevicesTable() {
+        JTable tbl = new JTable(app.getDeviceTableModel());
+        tbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        tbl.setRowSelectionAllowed(true);
+        tbl.setShowHorizontalLines(true);
+        tbl.setFillsViewportHeight(true);
 
-    private JPanel createDeviceControlPane() {
-        JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
-        p.add(createDevicesList());
-        return p;
+        JScrollPane pane = new JScrollPane(tbl);
+        pane.setBorder(BorderFactory.createTitledBorder("Devices"));
+        pane.setMinimumSize(new Dimension(400, 200));
+        
+        return pane;
     }
+    
 
-    private JPanel createDevicesList() {
-        JComboBox devices = new JComboBox(deviceListModel);
-        devices.setPreferredSize(new Dimension(200, 20));
-
-        app.addAndroidDeviceListener(new AndroidDeviceListener() {
-            @Override
-            public void connected(AndroidDevice dev) {
-                log.debug("[devicesBox] connected: dev=" + dev);
-                deviceListModel.addElement(dev.getName());
-                deviceListModel.setSelectedItem(dev.getName());
-            }
-
-            @Override
-            public void disconnected(AndroidDevice dev) {
-                log.debug("[devicesBox] disconnected: dev=" + dev);
-                deviceListModel.removeElement(dev.getName());
-            }
-        });
-
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        p.setBorder(BorderFactory.createTitledBorder("Devices"));
-        p.add(devices);
-        p.add( Command.get("Show").createButton() );
-
-        return p;
-    }
+//    private JPanel createDeviceControlPane() {
+//        JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
+//        p.add(createDevicesList());
+//        return p;
+//    }
+//
+//    private JPanel createDevicesList() {
+//        JComboBox devices = new JComboBox(deviceListModel);
+//        devices.setPreferredSize(new Dimension(200, 20));
+//
+//        app.addAndroidDeviceListener(new AndroidDeviceListener() {
+//            @Override
+//            public void connected(AndroidDevice dev) {
+//                log.debug("[devicesBox] connected: dev=" + dev);
+//                deviceListModel.addElement(dev.getName());
+//                deviceListModel.setSelectedItem(dev.getName());
+//            }
+//
+//            @Override
+//            public void disconnected(AndroidDevice dev) {
+//                log.debug("[devicesBox] disconnected: dev=" + dev);
+//                deviceListModel.removeElement(dev.getName());
+//            }
+//        });
+//
+//        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+//        p.setBorder(BorderFactory.createTitledBorder("Devices"));
+//        p.add(devices);
+//        p.add( Command.get("Show").createButton() );
+//
+//        return p;
+//    }
 
 }
