@@ -32,10 +32,13 @@ public class DeviceTableModel extends AbstractTableModel {
     public int getColumnCount() { return 5; }
 
     @Override
+    public int getRowCount() { return devices.size(); }
+
+    @Override
     public String getColumnName(int col) {
         switch (col) {
             case NAME:  return"Name";
-            case TYPE:  return "Type";
+            case TYPE:  return "Emulator";
             case SERNO: return "Serial No.";
             case STATE: return "State";
             case SHOW:  return "Visible";
@@ -44,14 +47,23 @@ public class DeviceTableModel extends AbstractTableModel {
     }
 
     @Override
-    public int getRowCount() { return devices.size(); }
+    public Class<?> getColumnClass(int col) {
+        switch (col) {
+            case NAME:  return String.class;
+            case TYPE:  return String.class;
+            case SERNO: return String.class;
+            case STATE: return String.class;
+            case SHOW:  return Boolean.class;
+        }
+        return String.class;
+    }
 
     @Override
     public Object getValueAt(int row, int col) {
         DeviceFrame dev = devices.get(row);
         if (dev != null) switch (col) {
             case NAME:  return dev.getDevice().getName();
-            case TYPE:  return dev.getDevice().isEmulator();        
+            case TYPE:  return dev.getDevice().isEmulator() ? "EMU" : "DEV";        
             case SERNO: return dev.getDevice().getDevice().getSerialNumber();
             case STATE: return dev.getDevice().getState();
             case SHOW:  return dev.isVisible();
@@ -72,6 +84,10 @@ public class DeviceTableModel extends AbstractTableModel {
     
     public void removeAll() {
         devices.clear(); 
+        fireTableDataChanged();
+    }
+    
+    public void refresh() {
         fireTableDataChanged();
     }
     

@@ -206,6 +206,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
             if (fresh) {
                 setTitle(device.getName());
                 pack();
+                app.getDeviceTableModel().refresh();
             }
         }
     }
