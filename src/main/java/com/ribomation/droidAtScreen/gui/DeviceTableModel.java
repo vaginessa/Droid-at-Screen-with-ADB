@@ -37,7 +37,7 @@ public class DeviceTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int col) {
         switch (col) {
-            case NAME:  return"Name";
+            case NAME:  return "Name";
             case TYPE:  return "Emulator";
             case SERNO: return "Serial No.";
             case STATE: return "State";
