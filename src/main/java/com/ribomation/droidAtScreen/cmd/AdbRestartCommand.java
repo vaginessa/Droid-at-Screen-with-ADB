@@ -39,6 +39,7 @@ public class AdbRestartCommand extends Command {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                app.disconnectAll();
                 boolean succeeded = app.getDeviceManager().restartADB();
                 statusBar.message("ADB restart " + (succeeded ? "succeeded" : "failed"));
             }

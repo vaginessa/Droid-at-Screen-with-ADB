@@ -38,7 +38,7 @@ public class DeviceTableModel extends AbstractTableModel {
     public String getColumnName(int col) {
         switch (col) {
             case NAME:  return "Name";
-            case TYPE:  return "Emulator";
+            case TYPE:  return "Type";
             case SERNO: return "Serial No.";
             case STATE: return "State";
             case SHOW:  return "Visible";
@@ -89,6 +89,17 @@ public class DeviceTableModel extends AbstractTableModel {
     
     public void refresh() {
         fireTableDataChanged();
+    }
+
+    public List<DeviceFrame> getDevices() {
+        return devices;
+    }
+
+    public DeviceFrame getDevice(String name) {
+        for (DeviceFrame device : devices) {
+            if (device.getName().equals(name)) return device;
+        }
+        return null;
     }
     
 }

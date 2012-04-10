@@ -35,6 +35,7 @@ public class AdbReloadDevicesCommand extends Command {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                app.disconnectAll();
                 app.getDeviceManager().reloadDevices();
                 app.getAppFrame().getStatusBar().message("Android devices reloaded");
             }

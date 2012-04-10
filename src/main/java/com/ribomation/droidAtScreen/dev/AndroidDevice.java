@@ -59,16 +59,14 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
         } catch (IOException e) {
             setState(ConnectionState.error);
             log.error("Failed to get screenshot: " + e);
-            throw new RuntimeException("Failed to get screenshot", e);
         } catch (TimeoutException e) {
             setState(ConnectionState.timeout);
             log.warn("Got timeout");
-            return null;
         } catch (AdbCommandRejectedException e) {
             setState(ConnectionState.rejected);
             log.error("ADB command rejected: OFFLINE=" + e.isDeviceOffline());
-            throw new RuntimeException(e);
         }
+        return null;
     }
 
     public ConnectionState getState() {

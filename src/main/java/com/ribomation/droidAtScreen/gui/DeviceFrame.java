@@ -15,7 +15,8 @@ package com.ribomation.droidAtScreen.gui;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.Settings;
 import com.ribomation.droidAtScreen.cmd.*;
-import com.ribomation.droidAtScreen.dev.*;
+import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.dev.ScreenImage;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -24,11 +25,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.util.*;
-import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Frame holder for the device image.
@@ -41,9 +39,9 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
             RenderingHints.KEY_INTERPOLATION,
             RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-    private final Logger log;
     private final Application app;
     private final AndroidDevice device;
+    private Logger log;
 
     private int scalePercentage = 100;
     private boolean landscapeMode = false;
@@ -51,11 +49,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 
     private ImageCanvas canvas;
     private JComponent toolBar;
-//    private AffineTransform scaleTX;
-//    private AffineTransform landscapeTX;
-//    private AffineTransform upsideDownTX;
     private RecordingListener recordingListener;
-    private Timer timer;
     private TimerTask retriever;
     private InfoPane infoPane;
 
@@ -81,16 +75,50 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
             @Override
             public void windowClosing(WindowEvent e) {
                 log.debug("windowClosing");
-                retriever.cancel();
-                timer.cancel();
+                stopRetriever();
                 DeviceFrame.this.setVisible(false);
             }
         });
 
-//        setUpsideDown(cfg.isUpsideDown());
-        timer = new Timer("Screenshot Timer");
-        timer.schedule(retriever = new Retriever(), 0, 500);
+        startRetriever();
         pack();
+    }
+
+    public void startRetriever() {
+        retriever = new Retriever();
+        app.getTimer().schedule(retriever, 0, 500);
+    }
+    
+    public void stopRetriever() {
+        retriever.cancel();
+    }
+
+    class Retriever extends TimerTask {
+        @Override
+        public void run() {
+            long start = System.currentTimeMillis();
+            ScreenImage image = device.getScreenImage();
+            long elapsed = System.currentTimeMillis() - start;
+            infoPane.setElapsed(elapsed, image);
+            infoPane.setStatus(device.getState().name().toUpperCase());
+
+            log.debug(String.format("Got screenshot %s, elapsed %d ms", image, elapsed));
+//            log.debug(device.getProperties());
+
+            boolean fresh = canvas.getScreenshot() == null;
+            if (image != null) {
+                if (recordingListener != null) recordingListener.record(image);
+                canvas.setScreenshot(image);
+                infoPane.setSizeInfo(canvas);
+            }
+
+            if (fresh) {
+                log = Logger.getLogger(DeviceFrame.class.getName() + ":" + device.getName());
+                setTitle(device.getName());
+                pack();
+                app.getDeviceTableModel().refresh();
+            }
+        }
     }
 
     protected JComponent createToolBar() {
@@ -183,33 +211,6 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
         }
     }
 
-    class Retriever extends TimerTask {
-        @Override
-        public void run() {
-            long start = System.currentTimeMillis();
-            ScreenImage image = device.getScreenImage();
-            long elapsed = System.currentTimeMillis() - start;
-            infoPane.setElapsed(elapsed, image);
-            infoPane.setStatus(device.getState().name().toUpperCase());
-
-            log.debug(String.format("Got screenshot %s, elapsed %d ms", image, elapsed));
-            log.debug(device.getProperties());
-
-            boolean fresh = canvas.getScreenshot() == null;
-            if (image != null) {
-//                if (landscapeMode) image.rotate();
-                if (recordingListener != null) recordingListener.record(image);
-                canvas.setScreenshot(image);
-                infoPane.setSizeInfo(canvas);
-            }
-
-            if (fresh) {
-                setTitle(device.getName());
-                pack();
-                app.getDeviceTableModel().refresh();
-            }
-        }
-    }
 
     class ImageCanvas extends JComponent {
         private ScreenImage image;
@@ -258,16 +259,33 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
         }
 
         BufferedImage toLandscape(BufferedImage img) {
-            int q = 3;
+            return rotate(3, img);
+//            int q = 3;
+//            int w = img.getWidth();
+//            int h = img.getHeight();
+//
+//            Point topLeft = new Point((q == 2 || q == 3) ? w : 0, (q == 1 || q == 2) ? h : 0);
+//            Point2D origo = AffineTransform.getQuadrantRotateInstance(q, 0, 0).transform(topLeft, null);
+//            BufferedImage result = new BufferedImage(h, w, img.getType());
+//            Graphics2D g = result.createGraphics();
+//            g.translate(0 - origo.getX(), 0 - origo.getY());
+//            g.transform(AffineTransform.getQuadrantRotateInstance(q, 0, 0));
+//            g.drawRenderedImage(img, null);
+//
+//            return result;
+        }
+
+        BufferedImage rotate(int quadrants, BufferedImage img) {
             int w = img.getWidth();
             int h = img.getHeight();
+            int x = (quadrants == 2 || quadrants == 3) ? w : 0;
+            int y = (quadrants == 1 || quadrants == 2) ? h : 0;
+            Point2D origo = AffineTransform.getQuadrantRotateInstance(quadrants, 0, 0).transform(new Point(x, y), null);
 
-            Point topLeft = new Point((q == 2 || q == 3) ? w : 0, (q == 1 || q == 2) ? h : 0);
-            Point2D origo = AffineTransform.getQuadrantRotateInstance(q, 0, 0).transform(topLeft, null);
             BufferedImage result = new BufferedImage(h, w, img.getType());
             Graphics2D g = result.createGraphics();
             g.translate(0 - origo.getX(), 0 - origo.getY());
-            g.transform(AffineTransform.getQuadrantRotateInstance(q, 0, 0));
+            g.transform(AffineTransform.getQuadrantRotateInstance(quadrants, 0, 0));
             g.drawRenderedImage(img, null);
 
             return result;
@@ -383,5 +401,5 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
     public int compareTo(DeviceFrame that) {
         return this.getName().compareTo(that.getName());
     }
-    
+
 }

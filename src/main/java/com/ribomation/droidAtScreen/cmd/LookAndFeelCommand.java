@@ -50,7 +50,7 @@ public class LookAndFeelCommand extends Command {
                     SwingUtilities.updateComponentTreeUI(app.getAppFrame());
                     app.getAppFrame().pack();
 
-                    for (DeviceFrame frame : app.getDevices().values()) {
+                    for (DeviceFrame frame : app.getDevices()) {
                         SwingUtilities.updateComponentTreeUI(frame);
                         frame.pack();
                     }

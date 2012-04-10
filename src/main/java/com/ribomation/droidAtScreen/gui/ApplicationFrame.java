@@ -15,14 +15,9 @@ package com.ribomation.droidAtScreen.gui;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.QuitCommand;
-import com.ribomation.droidAtScreen.dev.AndroidDevice;
-import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -36,7 +31,6 @@ import java.awt.event.WindowEvent;
 public class ApplicationFrame extends JFrame {
     private Logger                  log = Logger.getLogger(ApplicationFrame.class);
     private Application             app;
-//    private DefaultComboBoxModel    deviceListModel = new DefaultComboBoxModel();
     private StatusBar               statusBar;
 
     private final String[] TOOLBAR      = {"ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", "-", "About"};
@@ -53,8 +47,6 @@ public class ApplicationFrame extends JFrame {
 
     public StatusBar getStatusBar() { return statusBar; }
     
-//    public ComboBoxModel getDeviceList() { return deviceListModel; }
-
     public void  initGUI() {
         setIconImage(GuiUtil.loadIcon("device").getImage());
         setTitle(app.getInfo().getName() + ", Version " + app.getInfo().getVersion());
@@ -85,7 +77,6 @@ public class ApplicationFrame extends JFrame {
         return mb;
     }
     
-    
     private JComponent createDevicesTable() {
         JTable tbl = new JTable(app.getDeviceTableModel());
         tbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -95,43 +86,8 @@ public class ApplicationFrame extends JFrame {
 
         JScrollPane pane = new JScrollPane(tbl);
         pane.setBorder(BorderFactory.createTitledBorder("Devices"));
-//        pane.setMinimumSize(new Dimension(400, 200));
         
         return pane;
     }
     
-
-//    private JPanel createDeviceControlPane() {
-//        JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
-//        p.add(createDevicesList());
-//        return p;
-//    }
-//
-//    private JPanel createDevicesList() {
-//        JComboBox devices = new JComboBox(deviceListModel);
-//        devices.setPreferredSize(new Dimension(200, 20));
-//
-//        app.addAndroidDeviceListener(new AndroidDeviceListener() {
-//            @Override
-//            public void connected(AndroidDevice dev) {
-//                log.debug("[devicesBox] connected: dev=" + dev);
-//                deviceListModel.addElement(dev.getName());
-//                deviceListModel.setSelectedItem(dev.getName());
-//            }
-//
-//            @Override
-//            public void disconnected(AndroidDevice dev) {
-//                log.debug("[devicesBox] disconnected: dev=" + dev);
-//                deviceListModel.removeElement(dev.getName());
-//            }
-//        });
-//
-//        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//        p.setBorder(BorderFactory.createTitledBorder("Devices"));
-//        p.add(devices);
-//        p.add( Command.get("Show").createButton() );
-//
-//        return p;
-//    }
-
 }

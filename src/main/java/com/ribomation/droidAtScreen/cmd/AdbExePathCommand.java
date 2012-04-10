@@ -77,26 +77,27 @@ public class AdbExePathCommand extends Command {
 
         if (rc == JFileChooser.APPROVE_OPTION) {
             final File    file = chooser.getSelectedFile();
-
-            if (!file.equals(exe) && file.canRead() && file.canExecute()) {
+            getLog().info("chosen file: "+file.getAbsolutePath());
+            if (file.canRead()) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        getLog().info("setting file: "+file.getAbsolutePath());
                         txtField.setText( file.getAbsolutePath() );
                         getApplication().getSettings().setAdbExecutable(file);
                         getApplication().getDeviceManager().setAdbExecutable(file);
                         getApplication().getDeviceManager().createBridge();
                     }
                 });
-                if (exe != null && exe.exists()) {
-                    JOptionPane.showMessageDialog(getApplication().getAppFrame(),
-                            "The change of ADB path will take change the next time you start Droid@Screen",
-                            "", JOptionPane.WARNING_MESSAGE);
-                }
+//                if (exe != null && exe.exists()) {
+//                    JOptionPane.showMessageDialog(getApplication().getAppFrame(),
+//                            "The change of ADB path will take change the next time you start Droid@Screen",
+//                            "", JOptionPane.WARNING_MESSAGE);
+//                }
             } else {
                 JOptionPane.showMessageDialog(getApplication().getAppFrame(),
-                        "Cannot read/execute the file: "+file.getAbsolutePath(),
-                        "Not an executable",
+                        "Cannot read the file: "+file.getAbsolutePath(),
+                        "Not readable",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
