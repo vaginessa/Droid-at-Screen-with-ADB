@@ -170,6 +170,21 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
             public String getVersion() {
                 return appProperties.getProperty("app.version", "0.0");
             }
+            
+            @Override
+            public String getAppUri() {
+                return appProperties.getProperty("app.uri", "");
+            }
+            
+            @Override
+            public String getHelpUri() {
+                return appProperties.getProperty("help.uri", "");
+            }
+            
+            @Override
+            public String getMailUri() {
+                return appProperties.getProperty("mail.uri", "");
+            }
 
             @Override
             public Date getBuildDate() {

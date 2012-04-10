@@ -26,4 +26,10 @@ public interface Info {
     String getVersion();
 
     Date getBuildDate();
+
+    String getAppUri();
+
+    String getHelpUri();
+
+    String getMailUri();
 }

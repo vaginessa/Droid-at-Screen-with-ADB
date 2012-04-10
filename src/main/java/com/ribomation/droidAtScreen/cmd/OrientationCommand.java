@@ -36,7 +36,9 @@ public class OrientationCommand extends CommandWithTarget<DeviceFrame> {
         deviceFrame.setLandscapeMode(!deviceFrame.isLandscapeMode());
         updateButton(deviceFrame);
         deviceFrame.pack();
+        deviceFrame.invalidate();
         deviceFrame.validate();
+        deviceFrame.repaint();
     }
 
     protected void updateButton(DeviceFrame deviceFrame) {

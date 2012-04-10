@@ -255,8 +255,8 @@ public abstract class Command extends AbstractAction implements AndroidDeviceLis
         }
     }
 
-    private static class DummyCommand extends Command {
-        private DummyCommand(String name) {
+    protected static class DummyCommand extends Command {
+        public DummyCommand(String name) {
             super("dummy-"+name);
             setLabel(name);
         }

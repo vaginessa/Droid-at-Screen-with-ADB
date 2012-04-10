@@ -33,12 +33,12 @@ public class ApplicationFrame extends JFrame {
     private Application             app;
     private StatusBar               statusBar;
 
-    private final String[] TOOLBAR      = {"ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", "-", "About"};
+    private final String[] TOOLBAR      = {"ImageDirectory", "-", "AdbRestart", "AdbReloadDevices", "-", "Help", "About"};
     private final String[] FILE_MENU    = {"Quit"};
     private final String[] IMAGE_MENU   = {"ImageDirectory", "ImageFormat", "AskBeforeScreenshot"};
     private final String[] ADB_MENU     = {"AdbRestart", "AdbReloadDevices", "AdbExePath"};
     private final String[] OPTIONS_MENU = {"PreferredScale", "-", "HideEmulators", "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties"};
-    private final String[] HELP_MENU    = {"Help", "About"};
+    private final String[] HELP_MENU    = {"Help", "Home", "Mail", "About"};
 
 
     public ApplicationFrame(Application app) throws HeadlessException {

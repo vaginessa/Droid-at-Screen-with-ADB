@@ -325,12 +325,6 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 
     public void setScale(int scalePercentage) {
         this.scalePercentage = scalePercentage;
-//        if (scalePercentage != 100) {
-//            double scale = scalePercentage / 100.0;
-//            scaleTX = AffineTransform.getScaleInstance(scale, scale);
-//        } else {
-//            scaleTX = null;
-//        }
     }
 
     public void setUpsideDown(boolean upsideDown) {
