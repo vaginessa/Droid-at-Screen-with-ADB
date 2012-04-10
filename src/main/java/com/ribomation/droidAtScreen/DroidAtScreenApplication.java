@@ -209,7 +209,7 @@ public class DroidAtScreenApplication implements Application, AndroidDeviceListe
                 fireDeviceConnected(dev);
                 
                 frame.setLocationRelativeTo(getAppFrame());
-                frame.setVisible(true);
+                frame.setVisible(!getSettings().isHideEmulators() || !dev.isEmulator());
             }
         });
     }

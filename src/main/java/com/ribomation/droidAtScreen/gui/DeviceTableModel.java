@@ -1,5 +1,7 @@
 package com.ribomation.droidAtScreen.gui;
 
+import org.apache.log4j.Logger;
+
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +21,11 @@ public class DeviceTableModel extends AbstractTableModel {
     private static final int SHOW = 4;
     
     private List<DeviceFrame> devices = new ArrayList<DeviceFrame>();
+    private final Logger        log;
 
+    public DeviceTableModel() {
+        log = Logger.getLogger(this.getClass());
+    }
 
     /**
      * Number of columns of the device table.
@@ -71,6 +77,34 @@ public class DeviceTableModel extends AbstractTableModel {
         return null;
     }
 
+    @Override
+    public boolean isCellEditable(int row, int col) {
+        if (col == SHOW) return true;
+        return false;
+    }
+
+    @Override
+    public void setValueAt(Object value, int row, int col) {
+        log.debug(String.format("setValueAt [%d,%d] %s", row, col, value));
+
+        DeviceFrame dev = devices.get(row);
+        if (dev == null) return;
+
+        if (col == SHOW) {
+            boolean newValue = (Boolean) value;
+            if (!dev.isVisible() && newValue) { //show
+                dev.setVisible(true);
+            }
+            if (dev.isVisible() && !newValue) { //hide
+                dev.stopRetriever();
+                dev.setVisible(false);
+            }
+        }
+        
+        fireTableCellUpdated(row, col);
+    }
+    
+    
     public void add(DeviceFrame dev) {
         devices.add(dev);
         Collections.sort(devices);

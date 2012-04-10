@@ -27,11 +27,6 @@ public class AskBeforeQuitCommand extends CheckBoxCommand {
     }
 
     @Override
-    protected void notifyApplication(Application app, boolean selected) {
-        setPreferenceValue(selected);
-    }
-
-    @Override
     protected boolean getPreferenceValue() {
         return getApplication().getSettings().isAskBeforeQuit();
     }

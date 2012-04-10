@@ -15,9 +15,11 @@ package com.ribomation.droidAtScreen.cmd;
 import com.ribomation.droidAtScreen.Application;
 
 import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
- * DESCRIPTION
+ * Abstract command for boolean commands.
  *
  * @user jens
  * @date 2010-jan-19 10:36:37
@@ -25,6 +27,7 @@ import javax.swing.*;
 public abstract class CheckBoxCommand extends Command {
     @Override
     public JMenuItem newMenuItem() {
+        setSelected(getPreferenceValue());
         JCheckBoxMenuItem b = new JCheckBoxMenuItem();
         b.setSelected(getPreferenceValue());
         return b;
@@ -32,21 +35,26 @@ public abstract class CheckBoxCommand extends Command {
 
     @Override
     public AbstractButton newButton() {
+        setSelected(getPreferenceValue());
         AbstractButton b = new JCheckBox();
         b.setSelected(getPreferenceValue());
         return b;
     }
 
+    public void setSelected(boolean selected) {
+        putValue(Action.SELECTED_KEY, selected);
+    }
+
+    public boolean isSelected() {
+        return (Boolean) getValue(Action.SELECTED_KEY);
+    }
+
     @Override
     protected final void doExecute(Application app) {
         boolean selected = !getPreferenceValue();
-        setPreferenceValue( selected );
-        notifyApplication(app, selected);
+        setSelected(selected);
+        setPreferenceValue(selected);
     }
-
-    public boolean  isSelected() { return getPreferenceValue(); }
-
-    protected abstract void notifyApplication(Application app, boolean selected);
 
     protected abstract boolean getPreferenceValue();
 

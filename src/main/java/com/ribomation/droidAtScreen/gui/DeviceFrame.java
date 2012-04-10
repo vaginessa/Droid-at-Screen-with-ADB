@@ -77,6 +77,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
                 log.debug("windowClosing");
                 stopRetriever();
                 DeviceFrame.this.setVisible(false);
+                DeviceFrame.this.app.getDeviceTableModel().refresh();
             }
         });
 

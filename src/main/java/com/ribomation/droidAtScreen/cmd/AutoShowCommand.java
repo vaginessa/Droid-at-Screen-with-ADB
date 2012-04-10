@@ -22,15 +22,11 @@ import javax.swing.*;
  * @user jens
  * @date 2010-jan-18 10:35:20
  */
+@Deprecated
 public class AutoShowCommand extends CheckBoxCommand {
     public AutoShowCommand() {
         setLabel("Auto Show");
         setTooltip("Show new devices immediately");
-    }
-
-    @Override
-    protected void notifyApplication(Application app, boolean selected) {
-//        app.setAutoShow(selected);
     }
 
     @Override
@@ -42,6 +38,5 @@ public class AutoShowCommand extends CheckBoxCommand {
     protected void setPreferenceValue(boolean value) {
         getApplication().getSettings().setAutoShow(value);
     }
-
     
 }
