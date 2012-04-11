@@ -14,9 +14,9 @@ package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
 
-import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Shows the help text.
@@ -24,7 +24,7 @@ import java.net.URI;
  * @user Jens
  * @date 2012-04-11, 00:00
  */
-public class MailCommand extends Command {
+public class MailCommand extends CommandWithURI {
 
     public MailCommand() {
         setLabel("Mail");
@@ -34,20 +34,13 @@ public class MailCommand extends Command {
     }
 
     @Override
-    protected void doExecute(Application app) {
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            if (desktop.isSupported(Desktop.Action.MAIL)) {
-                try {
-                    desktop.browse(new URI(app.getInfo().getMailUri()));
-                    return;
-                } catch (Exception e) {
-                    getLog().warn("Invalid URI", e);
-                }
-            }
-        }
-
-        JOptionPane.showMessageDialog(app.getAppFrame(), "Mail client launch, not supported", "", JOptionPane.WARNING_MESSAGE);
+    protected Desktop.Action getType() {
+        return Desktop.Action.MAIL;
     }
-    
+
+    @Override
+    protected URI getURI(Application app) throws URISyntaxException {
+        return new URI(app.getInfo().getMailUri());
+    }
+
 }

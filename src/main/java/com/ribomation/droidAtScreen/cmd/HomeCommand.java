@@ -14,9 +14,9 @@ package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
 
-import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Shows the help text.
@@ -24,7 +24,7 @@ import java.net.URI;
  * @user Jens
  * @date 2012-04-11, 00:00
  */
-public class HomeCommand extends Command {
+public class HomeCommand extends CommandWithURI {
 
     public HomeCommand() {
         setLabel("Home");
@@ -34,20 +34,13 @@ public class HomeCommand extends Command {
     }
 
     @Override
-    protected void doExecute(Application app) {
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    desktop.browse(new URI(app.getInfo().getAppUri()));
-                    return;
-                } catch (Exception e) {
-                    getLog().warn("Invalid URI", e);
-                }
-            }
-        }
+    protected Desktop.Action getType() {
+        return Desktop.Action.BROWSE;
+    }
 
-        JOptionPane.showMessageDialog(app.getAppFrame(), "Browser launch, not supported", "", JOptionPane.WARNING_MESSAGE);
+    @Override
+    protected URI getURI(Application app) throws URISyntaxException {
+        return new URI(app.getInfo().getAppUri());
     }
     
 }

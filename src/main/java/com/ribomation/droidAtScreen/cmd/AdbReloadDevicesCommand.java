@@ -27,6 +27,7 @@ public class AdbReloadDevicesCommand extends Command {
     public AdbReloadDevicesCommand() {
         setLabel("Reload Devices");
         setIcon("diagram");
+        setMnemonic('L');
         setTooltip("Reloads all devices from ADB.");
     }
 
