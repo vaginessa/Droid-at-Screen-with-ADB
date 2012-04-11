@@ -27,7 +27,7 @@ public class ImageDirectoryCommand extends Command {
 
     public ImageDirectoryCommand() {
         setLabel("Image Dir");
-        setIcon("folder");
+        setIcon("imgfolder");
         updateView(getApplication().getSettings().getImageDirectory());
     }
     

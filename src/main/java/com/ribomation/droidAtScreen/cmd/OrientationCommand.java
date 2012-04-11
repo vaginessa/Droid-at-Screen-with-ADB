@@ -13,10 +13,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
-import com.ribomation.droidAtScreen.cmd.CommandWithTarget;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
-
-import javax.swing.*;
 
 /**
  * Flips the device-frame 90 degrees.

@@ -102,9 +102,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
             long elapsed = System.currentTimeMillis() - start;
             infoPane.setElapsed(elapsed, image);
             infoPane.setStatus(device.getState().name().toUpperCase());
-
             log.debug(String.format("Got screenshot %s, elapsed %d ms", image, elapsed));
-//            log.debug(device.getProperties());
 
             boolean fresh = canvas.getScreenshot() == null;
             if (image != null) {
@@ -123,12 +121,13 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
     }
 
     protected JComponent createToolBar() {
-        JPanel buttons = new JPanel(new GridLayout(5, 1, 0, 8));
+        JPanel buttons = new JPanel(new GridLayout(6, 1, 0, 8));
         buttons.add(new OrientationCommand(this).newButton());
         buttons.add(new ScaleCommand(this).newButton());
         buttons.add(new UpsideDownCommand(this).newButton());
         buttons.add(new ScreenshotCommand(this).newButton());
         buttons.add(new RecordingCommand(this).newButton());
+        buttons.add(new PropertiesCommand(this).newButton());
 
         JPanel tb = new JPanel(new FlowLayout());
         tb.setBorder(BorderFactory.createEmptyBorder());
@@ -261,19 +260,6 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 
         BufferedImage toLandscape(BufferedImage img) {
             return rotate(3, img);
-//            int q = 3;
-//            int w = img.getWidth();
-//            int h = img.getHeight();
-//
-//            Point topLeft = new Point((q == 2 || q == 3) ? w : 0, (q == 1 || q == 2) ? h : 0);
-//            Point2D origo = AffineTransform.getQuadrantRotateInstance(q, 0, 0).transform(topLeft, null);
-//            BufferedImage result = new BufferedImage(h, w, img.getType());
-//            Graphics2D g = result.createGraphics();
-//            g.translate(0 - origo.getX(), 0 - origo.getY());
-//            g.transform(AffineTransform.getQuadrantRotateInstance(q, 0, 0));
-//            g.drawRenderedImage(img, null);
-//
-//            return result;
         }
 
         BufferedImage rotate(int quadrants, BufferedImage img) {
