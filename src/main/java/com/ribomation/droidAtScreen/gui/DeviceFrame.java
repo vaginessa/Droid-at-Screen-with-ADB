@@ -216,7 +216,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 		Skin skin = null;
 		try {
 			skin = SkinUtil.loadSkin(device.getName().toLowerCase());
-		} catch (Exception ignore) {
+        } catch (Exception ignore) {
 		}
 		if (skin != null) {
 			// Apply skin
