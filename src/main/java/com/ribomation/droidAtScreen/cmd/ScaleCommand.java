@@ -20,15 +20,14 @@ import com.ribomation.droidAtScreen.gui.DeviceFrame;
 /**
  * Set the device frame projection scale, as a percentage.
  * <p/>
- * User: Jens
- * Created: 2012-03-22, 22:18
+ * User: Jens Created: 2012-03-22, 22:18
  */
 public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
-    public ScaleCommand(DeviceFrame deviceFrame) {
-        super(deviceFrame);
-        setIcon("scale");
-        updateButton(deviceFrame);
-    }
+	public ScaleCommand(DeviceFrame deviceFrame) {
+		super(deviceFrame);
+		setIcon("scale");
+		updateButton(deviceFrame);
+	}
 
     @Override
     protected void doExecute(Application app, final DeviceFrame deviceFrame) {
@@ -36,20 +35,20 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
                 new PreferredScaleCommand.OnScaleUpdatedListener() {
                     @Override
                     public void onScaleUpdated(int value) {
+                        updateButton(deviceFrame);
                         deviceFrame.setScale(value);
                         deviceFrame.pack();
                         deviceFrame.invalidate();
                         deviceFrame.validate();
                         deviceFrame.repaint();
-                        updateButton(deviceFrame);
                     }
                 });
         dlg.setLocationRelativeTo(deviceFrame);
         dlg.setVisible(true);
     }
 
-    @Override
-    protected void updateButton(DeviceFrame deviceFrame) {
-        setTooltip(String.format("Current scale (%d%%)", deviceFrame.getScale()));
-    }
+	@Override
+	protected void updateButton(DeviceFrame deviceFrame) {
+		setTooltip(String.format("Current scale (%d%%)", deviceFrame.getScale()));
+	}
 }
