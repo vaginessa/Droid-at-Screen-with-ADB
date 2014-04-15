@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Droid@Screen</name>
-    <url>http://blog.ribomation.com/droid-at-screen/</url>
+    <url>http://droid-at-screen.ribomation.com/</url>
 
     <groupId>com.ribomation</groupId>
     <artifactId>droidAtScreen</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.2</version>
+    <version>1.1</version>
 
     <properties>
         <app.class>com.ribomation.droidAtScreen.DroidAtScreenApplication</app.class>
@@ -95,6 +95,7 @@
                     </archive>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
