@@ -35,11 +35,17 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
                 new PreferredScaleCommand.OnScaleUpdatedListener() {
                     @Override
                     public void onScaleUpdated(int value) {
+                        getLog().debug("onScaleUpdated: value=" + value);
                         updateButton(deviceFrame);
-                        deviceFrame.setScale(value);
+                        deviceFrame.updateScale(value);
+                    }
+
+                    @Override
+                    public void onFinishScaleUpdated(int value) {
+                        getLog().debug("onFinishScaleUpdated: value=" + value);
+                        deviceFrame.updateScale(value);
                         deviceFrame.pack();
                         deviceFrame.invalidate();
-                        deviceFrame.validate();
                         deviceFrame.repaint();
                     }
                 });

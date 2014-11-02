@@ -12,38 +12,14 @@
 
 package com.ribomation.droidAtScreen.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.TimerTask;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 import org.apache.log4j.Logger;
 
@@ -77,12 +53,11 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 	private boolean upsideDown = false;
 
 	private ImageCanvas canvas;
+	private JScrollPane canvasScrollable;
 	private JComponent toolBar;
 	private RecordingListener recordingListener;
 	private TimerTask retriever;
 	private InfoPane infoPane;
-
-	private Point mouseDownCompCoords = null;
 
 	private final class AnimationActionListener implements ActionListener {
 
@@ -138,7 +113,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 	AnimationActionListener animationActionListener = new AnimationActionListener();
 	AnimationTimer timer = new AnimationTimer(1, animationActionListener);
 
-	public DeviceFrame(Application app, AndroidDevice device) {
+	public DeviceFrame(Application app, final AndroidDevice device) {
 		this.app = app;
 		this.device = device;
 		this.log = Logger.getLogger(DeviceFrame.class.getName() + ":" + device.getName());
@@ -150,12 +125,15 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 
 		setTitle(device.getName());
 		setIconImage(GuiUtil.loadIcon("device").getImage());
-		setResizable(false);
+		setResizable(true);
 
 		JComponent c = (JComponent) getContentPane();
 		c.setBorder(BorderFactory.createEmptyBorder());
 
-		add(canvas = new ImageCanvas(), BorderLayout.CENTER);
+		canvas = new ImageCanvas();
+		canvasScrollable = new JScrollPane(canvas);
+		
+		add(canvasScrollable, BorderLayout.CENTER);
 		add(toolBar = createToolBar(), BorderLayout.WEST);
 		add(infoPane = new InfoPane(), BorderLayout.SOUTH);
 
@@ -171,46 +149,63 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 				DeviceFrame.this.app.getDeviceTableModel().refresh();
 			}
 		});
-
-		addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				mouseDownCompCoords = null;
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				mouseDownCompCoords = e.getPoint();
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
+		
+		canvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-			}
-		});
-
-		addMouseMotionListener(new MouseMotionListener() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				Point currCoords = e.getLocationOnScreen();
-				setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
+				Point p = e.getPoint();
+				log.debug(String.format("mouse: %s", p));
+				p = new Point(
+						(int) (p.getX() * 100) / getScale(),
+						(int) (p.getY() * 100) / getScale()
+				);
+				log.debug(String.format("scaled: %s", p));
+				device.tap(p);
 			}
 		});
 
 		startRetriever();
 		pack();
 	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension	frame  = super.getPreferredSize();
+		Insets 		fb  = super.getInsets();
+		Dimension 	screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
+		Dimension canvasSize = canvas.getPreferredSize();
+		Dimension infoPaneSize = infoPane.getSize();
+		Dimension toolBarSize = toolBar.getSize();
+
+		log.debug(String.format("getPreferredSize: screen=%s, canvas=%s, frame=%s",
+				screen, canvasSize, frame
+		));
+
+		if (frame.height > screen.height) {
+			frame.height = (int) (0.9 * screen.height);
+		}
+		if (frame.width > screen.width) {
+			frame.width = (int) (0.9*screen.width);
+		}
+
+		JScrollBar vsb = canvasScrollable.getVerticalScrollBar();
+		int vsbW = vsb.getWidth(); //vsb.isShowing() ? vsb.getWidth() : 0;
+		JScrollBar hsb = canvasScrollable.getHorizontalScrollBar();
+		int hsbH = hsb.getHeight(); //hsb.isShowing() ? hsb.getHeight() : 0;
+		
+		int W = fb.left + toolBarSize.width + canvasSize.width + vsbW + fb.right;
+		int H = fb.top + infoPaneSize.height + canvasSize.height + hsbH + fb.bottom;
+		if (frame.width > W) {
+			frame.width = W;
+		}
+		if (frame.height > H) {
+			frame.height = H;
+		}
+		log.debug(String.format("getPreferredSize: frame2=%s", frame));
+
+		return frame;
+	}
+
 
 	private void applySkin() {
 		Skin skin = null;
@@ -504,6 +499,11 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 
 	public void setScale(int scalePercentage) {
 		this.scalePercentage = scalePercentage;
+	}
+
+	public void updateScale(int scalePercentage) {
+		setScale(scalePercentage);
+		canvas.repaint();
 	}
 
 	public void setUpsideDown(boolean upsideDown) {

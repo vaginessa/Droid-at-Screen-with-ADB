@@ -110,7 +110,7 @@ public class DeviceTableModel extends AbstractTableModel {
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {
-		log.debug(String.format("setValueAt [%d,%d] %s", row, col, value));
+//		log.debug(String.format("setValueAt [%d,%d] %s", row, col, value));
 
 		DeviceFrame dev = devices.get(row);
 		if (dev == null) {

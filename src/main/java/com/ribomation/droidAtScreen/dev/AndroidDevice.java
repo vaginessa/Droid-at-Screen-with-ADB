@@ -12,15 +12,13 @@
 
 package com.ribomation.droidAtScreen.dev;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
+import com.android.ddmlib.*;
 import org.apache.log4j.Logger;
-
-import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.RawImage;
-import com.android.ddmlib.TimeoutException;
 
 /**
  * Wrapper around an Android device.
@@ -69,6 +67,28 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
 		return null;
 	}
 
+	public void tap(Point p) {
+		try {
+			String cmd = String.format(Locale.ENGLISH, "input tap %.3f %.3f", p.getX(), p.getY());
+			log.debug("SEND: "+cmd);
+			target.executeShellCommand(cmd, new IShellOutputReceiver() {
+                @Override
+                public void addOutput(byte[] data, int offset, int length) {
+                    log.debug(String.format("SHELL: %s", new String(data, offset, length)));
+                }
+    
+                @Override
+                public void flush() { }
+    
+                @Override
+                public boolean isCancelled() { return false; }
+            });
+		} catch (Exception e) {
+			log.debug("Failed to send 'input tap' command to the device", e);
+		}
+	}
+	
+	
 	public ConnectionState getState() {
 		return state;
 	}

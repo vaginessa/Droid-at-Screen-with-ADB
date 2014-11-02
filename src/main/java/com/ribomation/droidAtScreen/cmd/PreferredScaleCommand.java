@@ -38,7 +38,7 @@ import com.ribomation.droidAtScreen.Application;
  * User: Jens Created: 2012-03-25, 10:30
  */
 public class PreferredScaleCommand extends Command {
-	private static final int vMarg = 2, hMarg = 4, lblHt = 26, minScale = 0, maxScale = 300, tick = 25;
+	private static final int vMarg = 2, hMarg = 4, lblHt = 26, minScale = 0, maxScale = 300, tick = 10;
 
 	protected PreferredScaleCommand() {
 		updateButton(getApplication().getSettings().getPreferredScale());
@@ -60,6 +60,9 @@ public class PreferredScaleCommand extends Command {
 				getLog().info(String.format("Preferred scale: value=%d", value));
 				updateButton(value);
 			}
+
+			@Override
+			public void onFinishScaleUpdated(int value) { }
 		});
 		dlg.setLocationRelativeTo(app.getAppFrame());
 		dlg.setVisible(true);
@@ -67,6 +70,8 @@ public class PreferredScaleCommand extends Command {
 
 	public interface OnScaleUpdatedListener {
 		void onScaleUpdated(int value);
+
+		void onFinishScaleUpdated(int value);
 	}
 
 	public static JDialog createScaleDialog(Application app, int currentValue, final OnScaleUpdatedListener action) {
@@ -92,11 +97,15 @@ public class PreferredScaleCommand extends Command {
 		scaleSlider.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if (scaleSlider.getValueIsAdjusting())
-					return;
 				int value = scaleSlider.getModel().getValue();
-				action.onScaleUpdated(value);
-				dlg.dispose();
+
+				if (scaleSlider.getValueIsAdjusting()) {
+					action.onScaleUpdated(value);
+					return;
+				} else {
+					action.onFinishScaleUpdated(value);
+					dlg.dispose();
+				}
 			}
 		});
 
