@@ -22,6 +22,7 @@ public class AndroidDeviceCommands extends MouseAdapter implements KeyEventDispa
 		this.deviceFrame = deviceFrame;
 		// Grab keyboard events
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		manager.removeKeyEventDispatcher(this);
 		manager.addKeyEventDispatcher(this);
 		// Disable space bar to activate some of the UI buttons
 		InputMap im = (InputMap) UIManager.get("Button.focusInputMap");
@@ -80,6 +81,21 @@ public class AndroidDeviceCommands extends MouseAdapter implements KeyEventDispa
 		} else {
 			swipe(startPoint, point);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		AndroidDeviceCommands that = (AndroidDeviceCommands) o;
+		// Only one KeyEventDispatcher per device allowed
+		return deviceFrame.getDevice().getName().equals(that.deviceFrame.getDevice().getName());
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * deviceFrame.getDevice().getName().hashCode();
 	}
 
 	private Point getScaledPoint(MouseEvent e) {
