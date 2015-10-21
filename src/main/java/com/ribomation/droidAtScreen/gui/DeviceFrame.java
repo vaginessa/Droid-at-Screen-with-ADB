@@ -150,8 +150,12 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 				DeviceFrame.this.app.getDeviceTableModel().refresh();
 			}
 		});
-		
-		canvas.addMouseListener(new AndroidDeviceCommands(this));
+
+		AndroidDeviceCommands commands = new AndroidDeviceCommands(this);
+		canvas.addMouseListener(commands);
+		canvas.addMouseWheelListener(commands);
+		addKeyListener(commands);
+		setFocusable(true);
 
 		startRetriever();
 		pack();
