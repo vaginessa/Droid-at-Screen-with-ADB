@@ -12,17 +12,18 @@
 
 package com.ribomation.droidAtScreen.dev;
 
-import java.awt.*;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
-
 import com.android.ddmlib.*;
 import org.apache.log4j.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Map;
+
 /**
  * Wrapper around an Android device.
- * 
+ *
  * @user jens
  * @date 2010-jan-17 12:16:55, 2011-Oct-02
  */
@@ -49,11 +50,24 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
 
 	public ScreenImage getScreenImage() {
 		try {
-			RawImage rawImage = target.getScreenshot();
-			if (rawImage == null)
+			final ScreenImage screenImage = new ScreenImage();
+			target.executeShellCommand("screencap -p", new BinaryDataReceiver() {
+				@Override
+				public void processNewLines(byte[] bytes) {
+					try {
+						BufferedImage bImageFromConvert = ImageIO.read(new ByteArrayInputStream(bytes));
+						screenImage.setBufferedImage(bImageFromConvert);
+						screenImage.setSize(bytes.length);
+					} catch (IOException e) {
+						log.error("Error reading binary stream: " + e.getMessage());
+					}
+				}
+			});
+			if (screenImage.getBufferedImage() == null) {
 				return null;
+			}
 			setState(target.getState());
-			return new ScreenImage(rawImage);
+			return screenImage;
 		} catch (IOException e) {
 			setState(ConnectionState.error);
 			log.error("Failed to get screenshot: " + e);
@@ -63,31 +77,36 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
 		} catch (AdbCommandRejectedException e) {
 			setState(ConnectionState.rejected);
 			log.error("ADB command rejected: OFFLINE=" + e.isDeviceOffline());
+		} catch (ShellCommandUnresponsiveException e) {
+			log.error("ADB shell not responding: " + e.getMessage());
 		}
 		return null;
 	}
 
 	public void sendCommand(String cmd) {
 		try {
-			log.debug("SEND: "+cmd);
+			log.debug("SEND: " + cmd);
 			target.executeShellCommand(cmd, new IShellOutputReceiver() {
-                @Override
-                public void addOutput(byte[] data, int offset, int length) {
-                    log.debug(String.format("SHELL: %s", new String(data, offset, length)));
-                }
-    
-                @Override
-                public void flush() { }
-    
-                @Override
-                public boolean isCancelled() { return false; }
-            });
+				@Override
+				public void addOutput(byte[] data, int offset, int length) {
+					log.debug(String.format("SHELL: %s", new String(data, offset, length)));
+				}
+
+				@Override
+				public void flush() {
+				}
+
+				@Override
+				public boolean isCancelled() {
+					return false;
+				}
+			});
 		} catch (Exception e) {
-			log.debug("Failed to send '"+cmd+"' command to the device", e);
+			log.debug("Failed to send '" + cmd + "' command to the device", e);
 		}
 	}
-	
-	
+
+
 	public ConnectionState getState() {
 		return state;
 	}
@@ -98,18 +117,18 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
 
 	private void setState(IDevice.DeviceState s) {
 		switch (s) {
-		case BOOTLOADER:
-			setState(ConnectionState.booting);
-			break;
-		case OFFLINE:
-			setState(ConnectionState.offline);
-			break;
-		case ONLINE:
-			setState(ConnectionState.online);
-			break;
-		case RECOVERY:
-			setState(ConnectionState.recovery);
-			break;
+			case BOOTLOADER:
+				setState(ConnectionState.booting);
+				break;
+			case OFFLINE:
+				setState(ConnectionState.offline);
+				break;
+			case ONLINE:
+				setState(ConnectionState.online);
+				break;
+			case RECOVERY:
+				setState(ConnectionState.recovery);
+				break;
 		}
 	}
 

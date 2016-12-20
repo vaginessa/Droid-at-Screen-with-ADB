@@ -12,29 +12,25 @@
 
 package com.ribomation.droidAtScreen.gui;
 
+import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.Settings;
+import com.ribomation.droidAtScreen.Skin;
+import com.ribomation.droidAtScreen.cmd.*;
+import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.dev.AndroidDeviceCommands;
+import com.ribomation.droidAtScreen.dev.ScreenImage;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.TimerTask;
-
-import javax.swing.*;
-
-import com.ribomation.droidAtScreen.dev.AndroidDeviceCommands;
-import org.apache.log4j.Logger;
-
-import com.ribomation.droidAtScreen.Application;
-import com.ribomation.droidAtScreen.Settings;
-import com.ribomation.droidAtScreen.Skin;
-import com.ribomation.droidAtScreen.cmd.OrientationCommand;
-import com.ribomation.droidAtScreen.cmd.PropertiesCommand;
-import com.ribomation.droidAtScreen.cmd.RecordingCommand;
-import com.ribomation.droidAtScreen.cmd.ScaleCommand;
-import com.ribomation.droidAtScreen.cmd.ScreenshotCommand;
-import com.ribomation.droidAtScreen.cmd.UpsideDownCommand;
-import com.ribomation.droidAtScreen.dev.AndroidDevice;
-import com.ribomation.droidAtScreen.dev.ScreenImage;
 
 /**
  * Frame holder for the device image.
@@ -43,8 +39,6 @@ import com.ribomation.droidAtScreen.dev.ScreenImage;
  * @date 2010-jan-17 22:13:20
  */
 public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
-	private final static RenderingHints HINTS = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
 	private final Application app;
 	private final AndroidDevice device;
 	private Logger log;
@@ -307,7 +301,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 
 		void setSizeInfo(ImageCanvas img) {
 			Dimension sz = img.getPreferredSize();
-			size.setText(String.format("%dx%d (%s)", sz.width, sz.height, new Unit(img.getScreenshot().getRawImage().size).toString()));
+			size.setText(String.format("%dx%d (%s)", sz.width, sz.height, new Unit(img.getScreenshot().getSize()).toString()));
 		}
 
 		public void setStatus(String devStatus) {
@@ -315,7 +309,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 		}
 
 		public void setElapsed(long time, ScreenImage img) {
-			int sz = (img != null ? (int) (img.getRawImage().size / (time / 1000.0)) : 0);
+			int sz = (img != null ? (int) (img.getSize() / (time / 1000.0)) : 0);
 			elapsed.setText(String.format("%d ms (%s/s)", time, new Unit(sz).toString()));
 		}
 	}

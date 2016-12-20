@@ -8,15 +8,27 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
 import java.util.Locale;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class AndroidDeviceCommands implements MouseListener, MouseWheelListener, KeyListener {
+	private static final String EMPTY = "";
 	private DeviceFrame deviceFrame;
 	private Point startPoint;
 	private Logger log;
+	private String keysBuffer = EMPTY;
 
 	public AndroidDeviceCommands(DeviceFrame deviceFrame) {
 		log = Logger.getLogger(this.getClass().getName() + ":" + deviceFrame.getDevice().getName());
 		this.deviceFrame = deviceFrame;
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				sendKeysBuffer();
+			}
+		}, 0, 3, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -57,7 +69,7 @@ public class AndroidDeviceCommands implements MouseListener, MouseWheelListener,
 	@Override
 	public void mouseExited(MouseEvent e) {
 	}
-	
+
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		Point from = getScaledPoint(new Point(e.getX(), e.getY()));
@@ -72,8 +84,9 @@ public class AndroidDeviceCommands implements MouseListener, MouseWheelListener,
 	public void keyTyped(KeyEvent e) {
 		// Most of the ASCII chars http://www.asciitable.com/
 		if (e.getKeyChar() >= 33 && e.getKeyChar() <= 126) {
-			sendText(e.getKeyChar());
+			keysBuffer += e.getKeyChar();
 		} else {
+			sendKeysBuffer();
 			sendKey(e.getKeyChar());
 		}
 	}
@@ -98,6 +111,11 @@ public class AndroidDeviceCommands implements MouseListener, MouseWheelListener,
 				log.error(ex);
 			}
 		}
+	}
+
+	private synchronized void sendKeysBuffer() {
+		sendText(keysBuffer);
+		keysBuffer = EMPTY;
 	}
 
 	private Point getScaledPoint(Point p) {
@@ -128,12 +146,10 @@ public class AndroidDeviceCommands implements MouseListener, MouseWheelListener,
 	}
 
 	private void sendText(String text) {
-		String cmd = String.format(Locale.ENGLISH, "input text '%s'", text);
-		deviceFrame.getDevice().sendCommand(cmd);
-	}
-
-	private void sendText(char letter) {
-		sendText(String.valueOf(letter));
+		if (text != null && !text.isEmpty()) {
+			String cmd = String.format(Locale.ENGLISH, "input text '%s'", text);
+			deviceFrame.getDevice().sendCommand(cmd);
+		}
 	}
 
 	private void sendKey(int key) {

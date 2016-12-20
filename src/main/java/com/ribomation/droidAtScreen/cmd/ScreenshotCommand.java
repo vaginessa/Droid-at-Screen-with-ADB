@@ -94,7 +94,7 @@ public class ScreenshotCommand extends CommandWithTarget<DeviceFrame> {
 
 	private File suggestFilename(Application app) {
 		Settings cfg = app.getSettings();
-		return new File(cfg.getImageDirectory(), String.format("%s-%d.%s", app.getInfo().getName().toLowerCase(), cfg.nextInt(), cfg.getImageFormat().toLowerCase()));
+		return new File(cfg.getImageDirectory(), String.format("droidAtScreen-screenshot-%d.%s", cfg.nextInt(), cfg.getImageFormat().toLowerCase()));
 	}
 
 	private boolean askOverwrite(Application app, File f) {

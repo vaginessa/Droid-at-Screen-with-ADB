@@ -12,23 +12,20 @@
 
 package com.ribomation.droidAtScreen.cmd;
 
+import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.dev.ScreenImage;
+import com.ribomation.droidAtScreen.gui.DeviceFrame;
+import com.ribomation.droidAtScreen.gui.RecordingListener;
+import com.ribomation.droidAtScreen.gui.StatusBar;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import com.ribomation.droidAtScreen.Application;
-import com.ribomation.droidAtScreen.dev.ScreenImage;
-import com.ribomation.droidAtScreen.gui.DeviceFrame;
-import com.ribomation.droidAtScreen.gui.RecordingListener;
-import com.ribomation.droidAtScreen.gui.StatusBar;
 
 /**
  * Records a series of screen-shots into a directory.
@@ -129,7 +126,7 @@ public class RecordingCommand extends CommandWithTarget<DeviceFrame> implements 
 	}
 
 	File nextName() {
-		return new File(dir, String.format("droidAtScreen-%d.%s", next.incrementAndGet(), format));
+		return new File(dir, String.format("droidAtScreen-recording-%d.%s", next.incrementAndGet(), format));
 	}
 
 }
