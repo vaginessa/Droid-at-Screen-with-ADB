@@ -37,7 +37,7 @@ public class UpsideDownCommand extends CommandWithTarget<DeviceFrame> {
 	@Override
 	protected void updateButton(DeviceFrame deviceFrame) {
 		setIcon(deviceFrame.isUpsideDown() ? "downsideup" : "upsidedown");
-		setTooltip(String.format("Flips the image upside-down [%s]. (Useful for ZTE Blade devices)", deviceFrame.isUpsideDown() ? "UpsideDown" : "Normal"));
+		setTooltip(String.format("Flips the image upside-down (%s). (Useful for ZTE Blade devices)", deviceFrame.isUpsideDown() ? "UpsideDown" : "Normal"));
 	}
 
 }

@@ -48,22 +48,25 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
 		return target;
 	}
 
-	public ScreenImage getScreenImage() {
+	public ScreenImage getScreenImage(boolean isRawImage) {
 		try {
 			final ScreenImage screenImage = new ScreenImage();
-			target.executeShellCommand("screencap -p", new BinaryDataReceiver() {
-				@Override
-				public void processNewLines(byte[] bytes) {
-					try {
-						BufferedImage bImageFromConvert = ImageIO.read(new ByteArrayInputStream(bytes));
-						screenImage.setBufferedImage(bImageFromConvert);
-						screenImage.setSize(bytes.length);
-					} catch (IOException e) {
-						log.error("Error reading binary stream: " + e.getMessage());
+			if (isRawImage) {
+				screenImage.setBufferedImage(target.getScreenshot());
+			} else {
+				target.executeShellCommand("screencap -p", new BinaryDataReceiver() {
+					@Override
+					public void processNewLines(byte[] bytes) {
+						try {
+							BufferedImage bImageFromConvert = ImageIO.read(new ByteArrayInputStream(bytes));
+							screenImage.setBufferedImage(bImageFromConvert, bytes.length);
+						} catch (IOException e) {
+							log.error("Error reading binary stream: " + e.getMessage());
+						}
 					}
-				}
-			});
-			if (screenImage.getBufferedImage() == null) {
+				});
+			}
+			if (screenImage.getSize() == 0) {
 				return null;
 			}
 			setState(target.getState());

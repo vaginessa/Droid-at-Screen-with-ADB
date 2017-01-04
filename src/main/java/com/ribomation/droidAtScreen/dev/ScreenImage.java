@@ -12,6 +12,8 @@
 
 package com.ribomation.droidAtScreen.dev;
 
+import com.android.ddmlib.RawImage;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -33,21 +35,28 @@ public class ScreenImage {
 		WritableRaster raster = bufferedImage.copyData(bufferedImage.getRaster().createCompatibleWritableRaster());
 		BufferedImage bImage = new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
 		ScreenImage copy = new ScreenImage();
-		copy.setBufferedImage(bImage);
-		copy.setSize(size);
+		copy.setBufferedImage(bImage, size);
 		return copy;
 	}
 
-	public void setBufferedImage(BufferedImage bufferedImage) {
+	public void setBufferedImage(BufferedImage bufferedImage, long size) {
 		this.bufferedImage = bufferedImage;
-	}
-
-	public BufferedImage getBufferedImage() {
-		return bufferedImage;
-	}
-
-	public void setSize(long size) {
 		this.size = size;
+	}
+
+	public void setBufferedImage(RawImage rawImage) {
+		if (rawImage != null) {
+			final int W = rawImage.width;
+			final int H = rawImage.height;
+			bufferedImage = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+			int bytesPerPixels = rawImage.bpp >> 3; //bpp = bits / pixels --> bytes / pixels
+			for (int y = 0, pxIdx = 0; y < H; y++) {
+				for (int x = 0; x < W; x++, pxIdx += bytesPerPixels) {
+					bufferedImage.setRGB(x, y, rawImage.getARGB(pxIdx));
+				}
+			}
+			size = rawImage.size;
+		}
 	}
 
 	public long getSize() {

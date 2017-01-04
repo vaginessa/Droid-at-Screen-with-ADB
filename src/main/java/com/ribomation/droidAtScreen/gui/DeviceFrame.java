@@ -46,6 +46,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 	private int scalePercentage = 100;
 	private boolean landscapeMode = false;
 	private boolean upsideDown = false;
+	private boolean rawImage = false;
 
 	private ImageCanvas canvas;
 	private JScrollPane canvasScrollable;
@@ -228,7 +229,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 		@Override
 		public void run() {
 			long start = System.currentTimeMillis();
-			ScreenImage image = device.getScreenImage();
+			ScreenImage image = device.getScreenImage(rawImage);
 			long elapsed = System.currentTimeMillis() - start;
 			infoPane.setElapsed(elapsed, image);
 			infoPane.setStatus(device.getState().name().toUpperCase());
@@ -256,9 +257,10 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 	}
 
 	protected JComponent createToolBar() {
-		JPanel buttons = new JPanel(new GridLayout(6, 1, 0, 8));
+		JPanel buttons = new JPanel(new GridLayout(7, 1, 0, 8));
 		buttons.add(new OrientationCommand(this).newButton());
 		buttons.add(new UpsideDownCommand(this).newButton());
+		buttons.add(new CaptureModeCommand(this).newButton());
 		buttons.add(new ScaleCommand(this).newButton());
 		buttons.add(new ScreenshotCommand(this).newButton());
 		buttons.add(new RecordingCommand(this).newButton());
@@ -507,6 +509,10 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 		//        }
 	}
 
+	public void setRawImage(boolean rawImage) {
+		this.rawImage = rawImage;
+	}
+
 	public void setRecordingListener(RecordingListener recordingListener) {
 		this.recordingListener = recordingListener;
 	}
@@ -538,6 +544,10 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
 
 	public boolean isUpsideDown() {
 		return upsideDown;
+	}
+
+	public boolean isRawImage() {
+		return rawImage;
 	}
 
 	private int scale(int value) {
